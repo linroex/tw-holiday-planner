@@ -73,6 +73,7 @@ export function YearCalendar({
           month={m}
           title={titleOf(y, m, boundary, i === 0)}
           boundary={boundary}
+          dropLeadingWeek={i > 0}
           holidayMap={holidayMap}
           leaveSet={leaveSet}
           segMap={segMap}

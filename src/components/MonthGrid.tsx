@@ -27,6 +27,11 @@ interface Props {
   todayISO: ISODate;
   selectedSegment: BreakSegment | null;
   weekStart: 0 | 1;
+  /**
+   * 捨棄開頭的跨月週（該週已由上個月的格子完整顯示）——
+   * 每一週只由它開始的月份顯示，整份月曆每天恰出現一次
+   */
+  dropLeadingWeek?: boolean;
   onDayTap: DayTapHandler;
 }
 
@@ -41,14 +46,16 @@ export function MonthGrid({
   todayISO,
   selectedSegment,
   weekStart,
+  dropLeadingWeek,
   onDayTap,
 }: Props) {
   const firstDay = toEpochDay(year, month, 1);
   const numDays = daysInMonth(year, month);
   // 頭尾補上鄰月日期（淡化），每一列都是完整的一週——跨月連假不再斷裂
   const leading = (weekdayOf(firstDay) - weekStart + 7) % 7;
-  const totalCells = Math.ceil((leading + numDays) / 7) * 7;
-  const gridStart = firstDay - leading;
+  const skipFirstWeek = !!dropLeadingWeek && leading > 0;
+  const totalCells = Math.ceil((leading + numDays) / 7) * 7 - (skipFirstWeek ? 7 : 0);
+  const gridStart = firstDay - leading + (skipFirstWeek ? 7 : 0);
 
   return (
     <section
