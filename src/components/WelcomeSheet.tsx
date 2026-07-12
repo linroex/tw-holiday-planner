@@ -17,11 +17,11 @@ export function WelcomeSheet({ onStartTour, onClose }: Props) {
           紅字是放假日。點任何<b>上班日</b>標記請假，自動幫你算出連假有幾天。
         </p>
         <div className="first-run-actions">
-          <button type="button" className="btn-primary first-run-tour" onClick={onStartTour}>
-            🧭 帶我看一遍（30 秒）
-          </button>
-          <button type="button" className="btn-secondary self-explore" onClick={onClose}>
+          <button type="button" className="btn-primary self-explore" onClick={onClose}>
             直接開始
+          </button>
+          <button type="button" className="btn-secondary first-run-tour" onClick={onStartTour}>
+            🧭 帶我看一遍（30 秒）
           </button>
         </div>
         <p className="settings-footnote">

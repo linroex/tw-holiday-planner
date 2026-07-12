@@ -8,9 +8,7 @@ import {
   saveSettings,
   type DisplaySettings,
 } from '../lib/storage';
-import { copyText } from '../lib/clipboard';
 import { isIOS, isStandalone } from '../lib/platform';
-import { encodePlanToHash } from '../lib/share';
 import { getHolidayMap, SUPPORTED_YEARS } from '../data';
 import { ownerYearOf, usePlans } from '../state/PlanContext';
 import { AppFooter } from './AppFooter';
@@ -69,6 +67,7 @@ export function Planner() {
   const [welcomeOpen, setWelcomeOpen] = useState(firstRun);
   const firstMarkHinted = useRef(false);
   const [shareOpen, setShareOpen] = useState(false);
+  const [shareForBackup, setShareForBackup] = useState(false);
   const [quotaOpen, setQuotaOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [tourActive, setTourActive] = useState(false);
@@ -217,16 +216,6 @@ export function Planner() {
     !settings.backupHintDismissed &&
     (leaveDays.length >= 3 || annotations.length >= 1);
 
-  const copyBackupLink = async () => {
-    const url = `${location.origin}${location.pathname}${encodePlanToHash(activePlan, true)}`;
-    try {
-      await copyText(url);
-      showToast('已複製備份連結，存到記事本吧！');
-    } catch {
-      showToast('複製失敗，請從「分享・匯出」手動複製');
-    }
-  };
-
   return (
     <div className="app">
       <header className="header">
@@ -267,28 +256,6 @@ export function Planner() {
 
       <main className="calendar-scroll" ref={scrollRef}>
         <p className="usage-hint">點上班日標記請假，自動幫你算連假長度</p>
-        {showBackupHint && (
-          <div className="backup-hint">
-            <p>
-              💾 規劃存在這台裝置的瀏覽器裡，Safari 久未使用可能會清除。最保險是
-              <b>加入主畫面</b>（分享 ⬆️ → 加入主畫面），或隨手存一份備份連結。
-            </p>
-            <div className="backup-hint-actions">
-              <button type="button" className="btn-secondary" onClick={copyBackupLink}>
-                複製備份連結
-              </button>
-              <button
-                type="button"
-                className="btn-text"
-                onClick={() =>
-                  updateSettings({ ...settings, backupHintDismissed: true })
-                }
-              >
-                知道了
-              </button>
-            </div>
-          </div>
-        )}
         <YearCalendar
           years={YEARS}
           leaveDays={leaveDays}
@@ -306,6 +273,34 @@ export function Planner() {
         </div>
         <AppFooter />
       </main>
+
+      {showBackupHint && (
+        <div className="backup-hint">
+          <p>
+            💾 規劃存在這台裝置的瀏覽器裡，Safari 久未使用可能清除。建議
+            <b>加入主畫面</b>（分享 ⬆️ → 加入主畫面），或定期備份。
+          </p>
+          <div className="backup-hint-actions">
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={() => {
+                setShareForBackup(true);
+                setShareOpen(true);
+              }}
+            >
+              去備份
+            </button>
+            <button
+              type="button"
+              className="btn-text"
+              onClick={() => updateSettings({ ...settings, backupHintDismissed: true })}
+            >
+              知道了
+            </button>
+          </div>
+        </div>
+      )}
 
       {listOpen && (
         <div
@@ -332,7 +327,10 @@ export function Planner() {
         sheetOpen={listOpen}
         onQuotaTap={() => setQuotaOpen(true)}
         onToggleSheet={() => setListOpen((v) => !v)}
-        onShare={() => setShareOpen(true)}
+        onShare={() => {
+          setShareForBackup(false);
+          setShareOpen(true);
+        }}
       />
 
       {quotaOpen && (
@@ -349,6 +347,7 @@ export function Planner() {
         <ShareSheet
           plan={activePlan}
           segments={segments.filter((s) => ownerYearOf(s.start) === activeYear)}
+          defaultIncludeNotes={shareForBackup}
           onClose={() => setShareOpen(false)}
         />
       )}
