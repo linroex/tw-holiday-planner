@@ -9,8 +9,6 @@ import { encodePlanToHash } from '../lib/share';
 interface Props {
   plan: UserPlan;
   segments: BreakSegment[];
-  /** 從備份提示進來時預先勾選「包含備註」 */
-  defaultIncludeNotes?: boolean;
   onClose: () => void;
 }
 
@@ -20,9 +18,11 @@ interface Props {
  * 2. 分享我的行程（備註可開關：給朋友關、轉移到自己其他裝置開）
  * 3. 加入行事曆（.ics 匯出）
  */
-export function ShareSheet({ plan, segments, defaultIncludeNotes, onClose }: Props) {
+export function ShareSheet({ plan, segments, onClose }: Props) {
   const planUrlRef = useRef<HTMLTextAreaElement>(null);
-  const [includeNotes, setIncludeNotes] = useState(defaultIncludeNotes ?? false);
+  // 預設含備註（匯出/備份為主用途）；勾選「不包含備註」才是給朋友的分享模式
+  const [excludeNotes, setExcludeNotes] = useState(false);
+  const includeNotes = !excludeNotes;
   const [copied, setCopied] = useState<'tool' | 'plan' | null>(null);
 
   // UTM 讓站主能用 GA 區分流量來源；放在 query（hash 之前），不影響資料解碼
@@ -101,10 +101,10 @@ export function ShareSheet({ plan, segments, defaultIncludeNotes, onClose }: Pro
           <label className="toggle-row">
             <input
               type="checkbox"
-              checked={includeNotes}
-              onChange={(e) => setIncludeNotes(e.target.checked)}
+              checked={excludeNotes}
+              onChange={(e) => setExcludeNotes(e.target.checked)}
             />
-            包含備註（自己備份用）
+            不包含備註，分享給朋友
           </label>
           <textarea
             ref={planUrlRef}
@@ -134,7 +134,7 @@ export function ShareSheet({ plan, segments, defaultIncludeNotes, onClose }: Pro
           </div>
           <p className="share-hint">
             {includeNotes
-              ? '⚠️ 含備註，只傳給自己；之後有修改，記得重新匯出一份'
+              ? '⚠️ 連結含你的備註，適合備份、換裝置；之後有修改，記得重新匯出一份'
               : '朋友打開是唯讀、看不到備註，可一鍵匯入'}
           </p>
         </div>

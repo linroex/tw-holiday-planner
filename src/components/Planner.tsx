@@ -67,7 +67,6 @@ export function Planner() {
   const [welcomeOpen, setWelcomeOpen] = useState(firstRun);
   const firstMarkHinted = useRef(false);
   const [shareOpen, setShareOpen] = useState(false);
-  const [shareForBackup, setShareForBackup] = useState(false);
   const [quotaOpen, setQuotaOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [tourActive, setTourActive] = useState(false);
@@ -277,17 +276,14 @@ export function Planner() {
       {showBackupHint && (
         <div className="backup-hint">
           <p>
-            💾 規劃存在這台裝置的瀏覽器裡，Safari 久未使用可能清除。建議
-            <b>加入主畫面</b>（分享 ⬆️ → 加入主畫面），或定期備份。
+            💾 太久沒打開的話，Safari 可能會清掉你的規劃。
+            <b>把本站加入主畫面</b>就不會被清（點下方分享 ⬆️ →「加入主畫面」）；或先備份一份。
           </p>
           <div className="backup-hint-actions">
             <button
               type="button"
               className="btn-secondary"
-              onClick={() => {
-                setShareForBackup(true);
-                setShareOpen(true);
-              }}
+              onClick={() => setShareOpen(true)}
             >
               去備份
             </button>
@@ -327,10 +323,7 @@ export function Planner() {
         sheetOpen={listOpen}
         onQuotaTap={() => setQuotaOpen(true)}
         onToggleSheet={() => setListOpen((v) => !v)}
-        onShare={() => {
-          setShareForBackup(false);
-          setShareOpen(true);
-        }}
+        onShare={() => setShareOpen(true)}
       />
 
       {quotaOpen && (
@@ -347,7 +340,6 @@ export function Planner() {
         <ShareSheet
           plan={activePlan}
           segments={segments.filter((s) => ownerYearOf(s.start) === activeYear)}
-          defaultIncludeNotes={shareForBackup}
           onClose={() => setShareOpen(false)}
         />
       )}
