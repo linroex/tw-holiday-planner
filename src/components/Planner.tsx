@@ -208,12 +208,12 @@ export function Planner() {
     d.startsWith(`${activeYear}-`),
   ).length;
 
-  // iOS Safari（未加入主畫面）＋已有規劃內容 → 提醒備份（7 天儲存清除規則）
+  // iOS Safari（未加入主畫面）＋已有相當規劃內容 → 提醒備份（7 天儲存清除規則）
   const showBackupHint =
     isIOS() &&
     !isStandalone() &&
     !settings.backupHintDismissed &&
-    (leaveDays.length >= 3 || annotations.length >= 1);
+    (leaveDays.length >= 5 || annotations.length >= 1);
 
   return (
     <div className="app">
