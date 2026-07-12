@@ -54,10 +54,8 @@ export function ShareSheet({ plans, onClose }: Props) {
         </div>
 
         <div className="share-section">
-          <span className="field-label">① 分享行程給朋友</span>
-          <p className="share-hint">
-            朋友打開是唯讀、看不到你的備註，已過去的請假也不會帶出去。
-          </p>
+          <span className="field-label">分享行程給朋友</span>
+          <p className="share-hint">朋友打開是唯讀，看不到你的備註。</p>
           <textarea
             ref={planUrlRef}
             className="share-url"
@@ -87,8 +85,8 @@ export function ShareSheet({ plans, onClose }: Props) {
         </div>
 
         <div className="share-section">
-          <span className="field-label">② 推薦這個工具</span>
-          <p className="share-hint">只分享工具本身，不含你的任何規劃資料。</p>
+          <span className="field-label">推薦這個工具</span>
+          <p className="share-hint">只有工具本身，不含你的規劃資料。</p>
           <div className="share-actions">
             <button
               type="button"

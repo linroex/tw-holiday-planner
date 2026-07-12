@@ -54,9 +54,9 @@ export function ExportSheet({ plans, segments, onClose }: Props) {
         </div>
 
         <div className="share-section">
-          <span className="field-label">① 備份連結（所有年份）</span>
+          <span className="field-label">備份連結</span>
           <p className="share-hint">
-            所有年份的規劃（含備註）壓縮成一條連結，存進記事本就是備份，<b>要還原時打開連結即可</b>。是匯出當下的快照——之後有修改，記得重新匯出。
+            存進記事本就是備份，<b>要還原時打開連結即可</b>。之後有修改，記得重新匯出。
           </p>
           <textarea
             ref={urlRef}
@@ -72,13 +72,12 @@ export function ExportSheet({ plans, segments, onClose }: Props) {
         </div>
 
         <div className="share-section">
-          <span className="field-label">② 加入行事曆</span>
+          <span className="field-label">加入行事曆</span>
           <button type="button" className="btn-secondary export-ics" onClick={downloadICS}>
             下載 .ics 檔（Google／Apple 日曆）
           </button>
           <p className="share-hint">
-            匯出有命名或有請假的連假為全天事件（含備註）。Google 日曆：設定 → 匯入與匯出；
-            手機直接開啟檔案即可加入。
+            手機直接開啟檔案即可加入；電腦版 Google 日曆在「設定 → 匯入與匯出」。
           </p>
         </div>
       </div>

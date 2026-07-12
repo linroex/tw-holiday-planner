@@ -37,7 +37,7 @@ const TOUR_STEPS: TourStep[] = [
   {
     selector: '.quota-info',
     title: '請假預算在左下角',
-    text: '已規劃幾天一目了然；點一下可調整今年的請假預算——特休、補休、婚假都算（每個年份分開計算）。',
+    text: '已規劃幾天一目了然；點一下可調整今年的請假預算——特休、補休、婚假都算。',
   },
   {
     selector: '.quota-bar .btn-secondary',
@@ -47,12 +47,12 @@ const TOUR_STEPS: TourStep[] = [
   {
     selector: '.quota-bar .btn-export',
     title: '匯出與分享',
-    text: '「匯出」給自己：備份連結、下載進 Google／Apple 日曆；旁邊的「分享」給別人：推薦工具、把行程傳給朋友（不含備註）。',
+    text: '「匯出」給自己：備份連結、加入行事曆；「分享」給別人：推薦工具、把行程傳給朋友。',
   },
   {
     selector: '.year-select',
     title: '切換年份',
-    text: '在 2026／2027 之間快速跳轉；手動捲動月曆時，這裡也會自動跟著更新。',
+    text: '在 2026／2027 之間快速跳轉。',
   },
   {
     selector: '.btn-help',

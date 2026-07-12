@@ -29,7 +29,7 @@ export function WelcomeSheet({ onStartTour, onClose }: Props) {
         <p className="settings-footnote">🔒 所有資料只存在你的裝置上，不上傳、不追蹤。</p>
         {isSafariITP() && (
           <p className="settings-footnote">
-            ⚠️ Safari 限制：超過 7 天沒進網站，資料會被清除（Apple 的規定）——完成規劃記得匯出備份。
+            ⚠️ Safari 限制：超過 7 天沒進網站，資料會被清除——完成規劃記得匯出備份。
           </p>
         )}
       </div>

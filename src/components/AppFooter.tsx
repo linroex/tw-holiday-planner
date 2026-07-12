@@ -36,7 +36,7 @@ export function AppFooter() {
     <footer className="app-footer">
       <p className="footer-privacy">
         <b>隱私：</b>所有規劃資料只儲存在你自己的裝置上（瀏覽器
-        localStorage）——沒有伺服器、不上傳、不追蹤。分享連結是把資料壓縮進網址裡，給不給人由你決定。
+        localStorage）——沒有伺服器、不上傳、不追蹤。分享連結是把資料放進網址裡，給不給人由你決定。
       </p>
       <p className="footer-about">
         開源小工具，覺得好用歡迎給顆 ⭐️、追蹤作者看更新，或開 issue 許願新功能：

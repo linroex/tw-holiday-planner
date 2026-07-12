@@ -16,7 +16,7 @@ export function QuotaSheet({ year, quota, used, onSetQuota, onClose }: Props) {
           <div>
             <h3 className="sheet-title">{year} 年請假預算</h3>
             <p className="sheet-subtitle">
-              已規劃 {used} 天 · 特休、補休、婚假都算，只是規劃參考，不是硬上限
+              已規劃 {used} 天 · 特休、補休、婚假都算，只是參考
             </p>
           </div>
           <button type="button" className="btn-text" onClick={onClose}>

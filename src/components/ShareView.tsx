@@ -52,7 +52,7 @@ export function ShareView({ plans }: Props) {
         <span className="readonly-badge">唯讀</span>
       </header>
       <main className="calendar-scroll">
-        <p className="usage-hint">這是朋友分享的規劃（請假 {totalLeave} 天）</p>
+        <p className="usage-hint">朋友分享的規劃，點「匯入」可以接手編輯</p>
         <CalendarView
           years={years}
           leaveDays={leaveDays}

@@ -77,9 +77,7 @@ export function SettingsSheet({
           className="btn-danger"
           onClick={() => {
             if (
-              confirm(
-                '確定要清除所有規劃與設定（包含每個年份的請假、備註與偏好）？此動作無法復原。',
-              )
+              confirm('確定要清除所有規劃與設定？此動作無法復原。')
             ) {
               onReset();
             }
