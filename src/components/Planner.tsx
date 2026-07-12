@@ -260,6 +260,13 @@ export function Planner() {
       </main>
 
       {listOpen && (
+        <div
+          className="panel-backdrop"
+          aria-hidden="true"
+          onClick={() => setListOpen(false)}
+        />
+      )}
+      {listOpen && (
         <div className="break-panel">
           <div className="break-panel-header">
             <h3 className="sheet-title">連假清單</h3>
@@ -325,6 +332,12 @@ export function Planner() {
           weekStart={settings.weekStart}
           onSetWeekStart={(weekStart) => updateSettings({ ...settings, weekStart })}
           onSetQuota={(year, quota) => dispatchFor(year, { type: 'set-quota', quota })}
+          onStartTour={() => {
+            setSettingsOpen(false);
+            setOnboarded(true);
+            setTourActive(true);
+          }}
+          onOpenHelp={() => setHelpOpen(true)}
           onReset={() => {
             // 完整重置：所有年份的規劃＋顯示偏好一併清除，重載後回到首次使用引導
             clearAllData();
@@ -332,7 +345,6 @@ export function Planner() {
           }}
           onClose={() => {
             setSettingsOpen(false);
-            if (!onboarded) setTourActive(true); // 首次設定完 → 播放導覽
             setOnboarded(true);
           }}
         />

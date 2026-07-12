@@ -6,6 +6,10 @@ interface Props {
   weekStart: 0 | 1;
   onSetWeekStart: (weekStart: 0 | 1) => void;
   onSetQuota: (year: number, quota: number) => void;
+  /** 首次使用：選擇「帶我導覽」 */
+  onStartTour: () => void;
+  /** 首次使用：開啟使用說明 */
+  onOpenHelp: () => void;
   onReset: () => void;
   onClose: () => void;
 }
@@ -17,6 +21,8 @@ export function SettingsSheet({
   weekStart,
   onSetWeekStart,
   onSetQuota,
+  onStartTour,
+  onOpenHelp,
   onReset,
   onClose,
 }: Props) {
@@ -26,9 +32,11 @@ export function SettingsSheet({
         <div className="sheet-handle" />
         <div className="sheet-header">
           <h3 className="sheet-title">{firstRun ? '開始規劃前' : '設定'}</h3>
-          <button type="button" className="btn-text" onClick={onClose}>
-            完成
-          </button>
+          {!firstRun && (
+            <button type="button" className="btn-text" onClick={onClose}>
+              完成
+            </button>
+          )}
         </div>
         {firstRun && (
           <p className="settings-intro">
@@ -79,47 +87,65 @@ export function SettingsSheet({
             </button>
           </div>
         </div>
-        {!firstRun && (
-          <button
-            type="button"
-            className="btn-danger"
-            onClick={() => {
-              if (confirm('確定要清除所有規劃與設定（包含每個年份的請假、備註與偏好）？此動作無法復原。')) {
-                onReset();
-              }
-            }}
-          >
-            清除所有規劃與設定
-          </button>
+        {firstRun ? (
+          <div className="first-run-actions">
+            <button type="button" className="btn-primary first-run-tour" onClick={onStartTour}>
+              🧭 開始使用，一步步教我
+            </button>
+            <button type="button" className="btn-secondary self-explore" onClick={onClose}>
+              我自己摸索就好
+            </button>
+            <button type="button" className="btn-text first-run-help" onClick={onOpenHelp}>
+              📖 先看使用說明
+            </button>
+          </div>
+        ) : (
+          <>
+            <button
+              type="button"
+              className="btn-danger"
+              onClick={() => {
+                if (
+                  confirm(
+                    '確定要清除所有規劃與設定（包含每個年份的請假、備註與偏好）？此動作無法復原。',
+                  )
+                ) {
+                  onReset();
+                }
+              }}
+            >
+              清除所有規劃與設定
+            </button>
+            <div className="about-section">
+              <span className="field-label">隱私</span>
+              <p className="about-text">
+                所有規劃資料<b>只儲存在你自己的裝置上</b>（瀏覽器的 localStorage）——
+                沒有伺服器、不上傳、不追蹤。分享連結是把資料壓縮進網址裡，
+                要不要給人、給誰，完全由你決定。
+              </p>
+            </div>
+            <div className="about-section">
+              <span className="field-label">關於</span>
+              <p className="about-text">
+                這是開源的小工具，覺得好用歡迎到 GitHub 給顆 ⭐️
+                支持，遇到問題或想要新功能也歡迎開 issue 告訴我們！
+              </p>
+              <a
+                className="about-link"
+                href="https://github.com/linroex/tw-holiday-planner"
+                target="_blank"
+                rel="noreferrer"
+              >
+                ⭐️ GitHub：linroex/tw-holiday-planner
+              </a>
+            </div>
+            <p className="settings-footnote">
+              假日資料：行政院人事行政總處核定之政府行政機關辦公日曆表
+              （2026 全年放假 120 日、2027 全年 121 日，均無補班日）。
+              2028 年行事曆預計 2027 年年中公告後更新。
+            </p>
+          </>
         )}
-        <div className="about-section">
-          <span className="field-label">隱私</span>
-          <p className="about-text">
-            所有規劃資料<b>只儲存在你自己的裝置上</b>（瀏覽器的 localStorage）——
-            沒有伺服器、不上傳、不追蹤。分享連結是把資料壓縮進網址裡，
-            要不要給人、給誰，完全由你決定。
-          </p>
-        </div>
-        <div className="about-section">
-          <span className="field-label">關於</span>
-          <p className="about-text">
-            這是開源的小工具，覺得好用歡迎到 GitHub 給顆 ⭐️
-            支持，遇到問題或想要新功能也歡迎開 issue 告訴我們！
-          </p>
-          <a
-            className="about-link"
-            href="https://github.com/linroex/tw-holiday-planner"
-            target="_blank"
-            rel="noreferrer"
-          >
-            ⭐️ GitHub：linroex/tw-holiday-planner
-          </a>
-        </div>
-        <p className="settings-footnote">
-          假日資料：行政院人事行政總處核定之政府行政機關辦公日曆表
-          （2026 全年放假 120 日、2027 全年 121 日，均無補班日）。
-          2028 年行事曆預計 2027 年年中公告後更新。
-        </p>
       </div>
     </div>
   );

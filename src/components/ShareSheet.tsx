@@ -39,8 +39,12 @@ export function ShareSheet({ plan, segments, onClose }: Props) {
   const [includeNotes, setIncludeNotes] = useState(false);
   const [copied, setCopied] = useState<'tool' | 'plan' | null>(null);
 
-  const toolUrl = `${location.origin}${location.pathname}`;
-  const planUrl = `${toolUrl}${encodePlanToHash(plan, includeNotes)}`;
+  // UTM 讓站主能用 GA 區分流量來源；放在 query（hash 之前），不影響資料解碼
+  const utm = (campaign: string) =>
+    `?utm_source=share&utm_medium=app&utm_campaign=${campaign}`;
+  const base = `${location.origin}${location.pathname}`;
+  const toolUrl = `${base}${utm('tool_link')}`;
+  const planUrl = `${base}${utm('plan_link')}${encodePlanToHash(plan, includeNotes)}`;
   const canNativeShare = typeof navigator.share === 'function';
 
   const copy = async (key: 'tool' | 'plan', text: string) => {

@@ -262,6 +262,14 @@ textarea {
   font-weight: 600;
 }
 
+/* 透明點擊層：點清單外面關閉（與其他 dialog 行為一致），不加深色以免遮月曆 */
+.panel-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 24;
+  background: transparent;
+}
+
 /* ── 連假清單面板（QuotaBar 上方，錨定在 .app 內） ── */
 .break-panel {
   position: absolute;
@@ -720,6 +728,23 @@ textarea {
   background: transparent;
   color: var(--c-text);
   box-shadow: inset 0 -5px 0 -1px var(--c-streak);
+}
+
+/* ── 首次使用的選擇 ── */
+.first-run-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.first-run-actions .btn-primary,
+.first-run-actions .btn-secondary {
+  width: 100%;
+}
+
+.first-run-help {
+  text-align: center;
 }
 
 /* ── 關於區塊 ── */
