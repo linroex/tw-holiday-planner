@@ -244,3 +244,44 @@
   }
 }
 
+
+/* ── 桌面（≥900px）：填滿式月份格＋多欄整年總覽 ── */
+@media (min-width: 900px) {
+  .year-calendar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px 28px;
+    align-items: start;
+    padding: 8px 24px 24px;
+  }
+
+  .month {
+    margin-top: 8px;
+  }
+
+  .year-calendar .day {
+    min-height: 46px;
+    padding-top: 4px;
+    padding-bottom: 8px;
+  }
+
+  .year-calendar .day-num {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 1320px) {
+  .year-calendar {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.year-calendar {
+  padding: 4px 12px 16px;
+}
+
+/* 邊界月份（前一年 12 月／次年 1 月）標題較淡 */
+.month-boundary .month-title {
+  color: var(--c-muted);
+  font-weight: 600;
+}

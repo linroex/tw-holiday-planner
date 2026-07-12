@@ -21,7 +21,8 @@ import { SettingsSheet } from './SettingsSheet';
 import { ExportSheet } from './ExportSheet';
 import { ShareSheet } from './ShareSheet';
 import { WelcomeSheet } from './WelcomeSheet';
-import { monthElementId, WeekStream } from './WeekStream';
+import { monthElementId } from './WeekStream';
+import { CalendarView } from './CalendarView';
 
 const YEARS = SUPPORTED_YEARS;
 const LAST_YEAR = YEARS[YEARS.length - 1]!;
@@ -255,7 +256,7 @@ export function Planner() {
 
       <main className="calendar-scroll" ref={scrollRef}>
         <p className="usage-hint">點上班日標記請假，自動幫你算連假長度</p>
-        <WeekStream
+        <CalendarView
           years={YEARS}
           leaveDays={leaveDays}
           annotations={annotations}

@@ -4,7 +4,7 @@ import { detectBreaks, type BreakSegment } from '../lib/breaks';
 import { todayISO } from '../lib/date';
 import { loadPlan, loadSettings, savePlan } from '../lib/storage';
 import { BreakList } from './BreakList';
-import { WeekStream } from './WeekStream';
+import { CalendarView } from './CalendarView';
 
 interface Props {
   /** 朋友分享的規劃（所有年份、不含備註、不含過去） */
@@ -53,7 +53,7 @@ export function ShareView({ plans }: Props) {
       </header>
       <main className="calendar-scroll">
         <p className="usage-hint">這是朋友分享的規劃（請假 {totalLeave} 天）</p>
-        <WeekStream
+        <CalendarView
           years={years}
           leaveDays={leaveDays}
           annotations={annotations}

@@ -985,3 +985,21 @@ textarea {
     transform: translate(-50%, 0);
   }
 }
+
+/* ── 桌面版：放寬版心給多欄月曆 ── */
+@media (min-width: 900px) {
+  .app {
+    max-width: 1100px;
+  }
+
+  .break-panel {
+    max-width: 560px;
+    margin: 0 auto;
+  }
+}
+
+@media (min-width: 1320px) {
+  .app {
+    max-width: 1440px;
+  }
+}
