@@ -249,10 +249,11 @@
 @media (min-width: 900px) {
   .year-calendar {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    /* 滿版下欄數隨寬度自動增加，格子不會被撐得過大 */
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
     gap: 12px 28px;
     align-items: start;
-    padding: 8px 24px 24px;
+    padding: 8px 28px 24px;
   }
 
   .month {
@@ -267,12 +268,6 @@
 
   .year-calendar .day-num {
     font-size: 14px;
-  }
-}
-
-@media (min-width: 1320px) {
-  .year-calendar {
-    grid-template-columns: repeat(4, 1fr);
   }
 }
 
