@@ -61,16 +61,6 @@ export function HelpContent() {
         🔒 隱私：所有資料只存在你的裝置上，不上傳、不追蹤（完整說明見頁面最下方）。
       </p>
       <p className="settings-footnote">
-        📱 iOS 用 Safari 開的話，<b>超過 7 天沒打開可能被系統清除資料</b>——
-        把本站加入主畫面（分享 ⬆️ →「加入主畫面」）就不會被清，
-        或從「分享・匯出」存一份備份連結。
-      </p>
-      <p className="settings-footnote">
-        ✈️ 主畫面 App 兩件事：<b>第一次請在有網路時開啟</b>（下載離線內容，之後斷網也能用）；
-        它與 Safari 的<b>資料是分開的</b>——用「分享・匯出」複製連結，再到 App
-        裡「貼上匯入」即可搬資料。
-      </p>
-      <p className="settings-footnote">
         放假日以行政院人事行政總處核定的辦公日曆表為準（2026 全年 120 日、2027 全年 121
         日，均無補班日）；勞基法適用的公司請假規定可能略有不同。 2028 年行事曆預計 2027
         年年中由政府公告，屆時會更新進來。
@@ -92,7 +82,7 @@ export function HelpSheet({ onClose, onReplayTour }: Props) {
         </div>
 
         <button type="button" className="btn-secondary tour-replay" onClick={onReplayTour}>
-          🧭 播放互動導覽（直接在畫面上指給你看）
+          🧭 播放導覽
         </button>
 
         <HelpContent />
