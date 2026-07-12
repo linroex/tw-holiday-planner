@@ -94,6 +94,27 @@ textarea {
   font-weight: 700;
 }
 
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 年份下拉：跳轉捲動位置，也隨捲動自動更新 */
+.year-select {
+  font: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--c-accent);
+  background: var(--c-holiday-bg);
+  border: none;
+  border-radius: 10px;
+  padding: 6px 8px;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
 .btn-icon {
   font-size: 20px;
   padding: 8px;
@@ -239,6 +260,14 @@ textarea {
 
 .break-list {
   list-style: none;
+}
+
+.break-year-header {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c-muted);
+  padding: 10px 4px 2px;
+  border-bottom: 1px solid var(--c-border);
 }
 
 .break-item {
@@ -523,10 +552,25 @@ textarea {
 }
 
 .share-url {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--c-border);
+  border-radius: 12px;
+  background: var(--c-bg);
+  padding: 10px 12px;
+  margin-bottom: 10px;
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-  font-size: 12px !important;
+  font-size: 12px;
+  line-height: 1.5;
   word-break: break-all;
   color: var(--c-muted);
+  resize: none;
+}
+
+.share-url:focus {
+  outline: 2px solid var(--c-accent);
+  border-color: transparent;
 }
 
 .share-actions {

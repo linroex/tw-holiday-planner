@@ -95,9 +95,9 @@ export function ShareSheet({ plan, segments, onClose }: Props) {
               <button
                 type="button"
                 className="btn-secondary"
-                onClick={() => nativeShare('2027 台灣連假規劃工具', toolUrl)}
+                onClick={() => nativeShare('台灣連假規劃工具', toolUrl)}
               >
-                分享…
+                ⤴ 系統分享
               </button>
             )}
           </div>
@@ -135,7 +135,7 @@ export function ShareSheet({ plan, segments, onClose }: Props) {
                 className="btn-secondary"
                 onClick={() => nativeShare(`我的 ${plan.year} 連假規劃`, planUrl)}
               >
-                分享…
+                ⤴ 系統分享
               </button>
             )}
           </div>

@@ -8,7 +8,9 @@ import { monthElementId, type DayTapHandler, type SegCellInfo } from './YearCale
 interface Props {
   year: number;
   month: number;
-  /** 邊界月份（前一年 12 月／次年 1 月），標題含年份、樣式較淡 */
+  /** 顯示標題（含或不含年份由呼叫端決定） */
+  title: string;
+  /** 邊界月份（範圍外的前一年 12 月／次年 1 月），樣式較淡 */
   boundary?: boolean;
   holidayMap: Map<ISODate, HolidayEntry>;
   leaveSet: ReadonlySet<ISODate>;
@@ -22,6 +24,7 @@ interface Props {
 export function MonthGrid({
   year,
   month,
+  title,
   boundary,
   holidayMap,
   leaveSet,
@@ -40,7 +43,7 @@ export function MonthGrid({
       className={`month${boundary ? ' month-boundary' : ''}`}
       id={monthElementId(year, month)}
     >
-      <h2 className="month-title">{boundary ? `${year}年${month}月` : `${month}月`}</h2>
+      <h2 className="month-title">{title}</h2>
       <div className="month-grid weekday-row" aria-hidden="true">
         {Array.from({ length: 7 }, (_, i) => {
           const wd = (i + weekStart) % 7;

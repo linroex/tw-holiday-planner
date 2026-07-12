@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import type { UserPlan } from '../data/types';
+import type { BreakAnnotation } from '../data/types';
 import { getHolidayMap } from '../data';
 import { annotationsForSegment, type BreakSegment } from '../lib/breaks';
 import { epochDayToISO, isoToEpochDay, type ISODate } from '../lib/date';
@@ -17,7 +17,10 @@ export interface SegCellInfo {
 export type DayTapHandler = (iso: ISODate, status: DayStatus) => void;
 
 interface Props {
-  plan: UserPlan;
+  /** 連續顯示的年份（如 [2026, 2027]），前後各補一個邊界月 */
+  years: number[];
+  leaveDays: readonly ISODate[];
+  annotations: readonly BreakAnnotation[];
   segments: BreakSegment[];
   /** 高亮中的區段（從連假清單點入時） */
   selectedSegment: BreakSegment | null;
@@ -30,14 +33,22 @@ export function monthElementId(year: number, month: number): string {
   return `month-${year}-${month}`;
 }
 
-export function YearCalendar({ plan, segments, selectedSegment, weekStart, onDayTap }: Props) {
+export function YearCalendar({
+  years,
+  leaveDays,
+  annotations,
+  segments,
+  selectedSegment,
+  weekStart,
+  onDayTap,
+}: Props) {
   const holidayMap = getHolidayMap();
-  const leaveSet = useMemo(() => new Set(plan.leaveDays), [plan.leaveDays]);
+  const leaveSet = useMemo(() => new Set(leaveDays), [leaveDays]);
 
   const segMap = useMemo(() => {
     const map = new Map<ISODate, SegCellInfo>();
     for (const seg of segments) {
-      const name = annotationsForSegment(seg, plan.annotations)
+      const name = annotationsForSegment(seg, annotations)
         .find((a) => a.name.trim())
         ?.name.trim();
       const s = isoToEpochDay(seg.start);
@@ -47,7 +58,7 @@ export function YearCalendar({ plan, segments, selectedSegment, weekStart, onDay
       }
     }
     return map;
-  }, [segments, plan.annotations]);
+  }, [segments, annotations]);
 
   const todayISO = useMemo(() => {
     const now = new Date();
@@ -55,12 +66,20 @@ export function YearCalendar({ plan, segments, selectedSegment, weekStart, onDay
     return `${now.getFullYear()}-${p(now.getMonth() + 1)}-${p(now.getDate())}`;
   }, []);
 
-  // 前後各多渲染一個邊界月份，跨年連假（如 12/31–1/2）與隔年請假一目了然
+  const firstYear = years[0]!;
+  const lastYear = years[years.length - 1]!;
+
+  // 前後各多渲染一個邊界月份；跨年連假與隔年請假一目了然
   const months: { y: number; m: number; boundary: boolean }[] = [
-    { y: plan.year - 1, m: 12, boundary: true },
-    ...Array.from({ length: 12 }, (_, i) => ({ y: plan.year, m: i + 1, boundary: false })),
-    { y: plan.year + 1, m: 1, boundary: true },
+    { y: firstYear - 1, m: 12, boundary: true },
+    ...years.flatMap((y) =>
+      Array.from({ length: 12 }, (_, i) => ({ y, m: i + 1, boundary: false })),
+    ),
+    { y: lastYear + 1, m: 1, boundary: true },
   ];
+
+  const titleOf = (y: number, m: number, boundary: boolean) =>
+    boundary || m === 1 ? `${y}年${m}月` : `${m}月`;
 
   return (
     <div className="year-calendar">
@@ -69,6 +88,7 @@ export function YearCalendar({ plan, segments, selectedSegment, weekStart, onDay
           key={`${y}-${m}`}
           year={y}
           month={m}
+          title={titleOf(y, m, boundary)}
           boundary={boundary}
           holidayMap={holidayMap}
           leaveSet={leaveSet}

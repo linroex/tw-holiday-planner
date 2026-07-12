@@ -1,22 +1,19 @@
-import { SUPPORTED_YEARS } from '../data';
-
 interface Props {
-  quota: number;
+  years: number[];
+  /** 各年份的特休天數（每年可不同） */
+  quotas: Record<number, number>;
   firstRun: boolean;
-  year: number;
-  onSetYear: (year: number) => void;
   weekStart: 0 | 1;
   onSetWeekStart: (weekStart: 0 | 1) => void;
-  onSetQuota: (quota: number) => void;
+  onSetQuota: (year: number, quota: number) => void;
   onReset: () => void;
   onClose: () => void;
 }
 
 export function SettingsSheet({
-  quota,
+  years,
+  quotas,
   firstRun,
-  year,
-  onSetYear,
   weekStart,
   onSetWeekStart,
   onSetQuota,
@@ -35,47 +32,34 @@ export function SettingsSheet({
         </div>
         {firstRun && (
           <p className="settings-intro">
-            設定你的年度特休天數，之後點月曆上的上班日就能標記請假、湊出連假。
+            設定各年度的特休天數（年資不同天數可能不同），之後點月曆上的上班日就能標記請假、湊出連假。
           </p>
         )}
-        <div className="field">
-          <span className="field-label">年度特休天數</span>
-          <div className="stepper">
-            <button
-              type="button"
-              className="stepper-btn"
-              aria-label="減少"
-              onClick={() => onSetQuota(quota - 1)}
-              disabled={quota <= 0}
-            >
-              −
-            </button>
-            <span className="stepper-value">{quota} 天</span>
-            <button
-              type="button"
-              className="stepper-btn"
-              aria-label="增加"
-              onClick={() => onSetQuota(quota + 1)}
-            >
-              ＋
-            </button>
-          </div>
-        </div>
-        <div className="field">
-          <span className="field-label">規劃年份（各年份的規劃分開儲存）</span>
-          <div className="segmented">
-            {SUPPORTED_YEARS.map((y) => (
+        {years.map((year) => (
+          <div className="field" key={year}>
+            <span className="field-label">{year} 年度特休天數</span>
+            <div className="stepper">
               <button
-                key={y}
                 type="button"
-                className={y === year ? 'segmented-on' : ''}
-                onClick={() => onSetYear(y)}
+                className="stepper-btn"
+                aria-label={`減少 ${year} 特休`}
+                onClick={() => onSetQuota(year, quotas[year]! - 1)}
+                disabled={quotas[year]! <= 0}
               >
-                {y}
+                −
               </button>
-            ))}
+              <span className="stepper-value">{quotas[year]} 天</span>
+              <button
+                type="button"
+                className="stepper-btn"
+                aria-label={`增加 ${year} 特休`}
+                onClick={() => onSetQuota(year, quotas[year]! + 1)}
+              >
+                ＋
+              </button>
+            </div>
           </div>
-        </div>
+        ))}
         <div className="field">
           <span className="field-label">每週從哪天開始</span>
           <div className="segmented">

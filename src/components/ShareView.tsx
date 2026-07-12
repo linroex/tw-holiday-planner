@@ -37,7 +37,9 @@ export function ShareView({ plan }: { plan: UserPlan }) {
           這是朋友分享的規劃（特休 {plan.leaveDays.length} / {plan.annualLeaveQuota} 天）
         </p>
         <YearCalendar
-          plan={plan}
+          years={[plan.year]}
+          leaveDays={plan.leaveDays}
+          annotations={plan.annotations}
           segments={segments}
           selectedSegment={selected}
           weekStart={loadSettings().weekStart}
@@ -46,7 +48,6 @@ export function ShareView({ plan }: { plan: UserPlan }) {
         <div className="share-breaks">
           <h3 className="sheet-title">連假清單</h3>
           <BreakList
-            year={plan.year}
             segments={segments}
             annotations={plan.annotations}
             onSelect={(seg) => setSelected(seg === selected ? null : seg)}

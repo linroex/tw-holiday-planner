@@ -18,22 +18,23 @@ export interface BreakSegment {
 }
 
 /**
- * 偵測 year 年的連續休假區段。
+ * 偵測 year（至 endYear，含）年間的連續休假區段。
  * 以 epoch day 從前一年 12/1 線性掃到次年 1/31，跨月、跨年邊界對演算法透明；
  * registry 查無的年份只靠週末判斷（例如 2028/1/1、1/2 恰為週末，跨年段仍正確）。
- * 收錄條件：與 year 有交集，且（長度 ≥ 3、含請假日、或含國定假日）——
+ * 收錄條件：與年份區間有交集，且（長度 ≥ 3、含請假日、或含國定假日）——
  * 純兩日週末不列入，但端午、中秋這種週間單日假會以單日項目列出，方便規劃請假。
  */
 export function detectBreaks(
   year: number,
   leaveDays: readonly ISODate[],
   holidayMap: Map<ISODate, HolidayEntry> = getHolidayMap(),
+  endYear: number = year,
 ): BreakSegment[] {
   const leaveSet = new Set(leaveDays);
   const scanStart = toEpochDay(year - 1, 12, 1);
-  const scanEnd = toEpochDay(year + 1, 1, 31);
+  const scanEnd = toEpochDay(endYear + 1, 1, 31);
   const yearStart = toEpochDay(year, 1, 1);
-  const yearEnd = toEpochDay(year, 12, 31);
+  const yearEnd = toEpochDay(endYear, 12, 31);
 
   const segments: BreakSegment[] = [];
   let runStart: number | null = null;
