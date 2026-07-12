@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { UserPlan } from '../../data/types';
 import { detectBreaks } from '../breaks';
-import { buildICS, gcalEventUrl } from '../calendar';
+import { buildICS } from '../calendar';
 
 const plan: UserPlan = {
   version: 1,
@@ -35,15 +35,5 @@ describe('buildICS', () => {
   it('結構完整', () => {
     expect(ics.startsWith('BEGIN:VCALENDAR')).toBe(true);
     expect(ics.trimEnd().endsWith('END:VCALENDAR')).toBe(true);
-  });
-});
-
-describe('gcalEventUrl', () => {
-  it('產生全天事件範本連結', () => {
-    const seg = detectBreaks(plan.year, plan.leaveDays).find((s) => s.start === '2027-04-03')!;
-    const url = gcalEventUrl(seg, '澳洲', '直飛');
-    expect(url).toContain('calendar.google.com/calendar/render');
-    expect(url).toContain('dates=20270403%2F20270412');
-    expect(url).toContain(encodeURIComponent('澳洲'));
   });
 });

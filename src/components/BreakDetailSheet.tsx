@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import type { BreakAnnotation } from '../data/types';
 import { anchorForSegment, annotationsForSegment, type BreakSegment } from '../lib/breaks';
-import { gcalEventUrl } from '../lib/calendar';
 import { formatRange } from './BreakList';
 
 interface Props {
@@ -71,14 +70,6 @@ export function BreakDetailSheet({ year, segment, annotations, onSave, onClose }
             }}
           />
         </label>
-        <a
-          className="btn-gcal"
-          href={gcalEventUrl(segment, name.trim() || segment.defaultName, note)}
-          target="_blank"
-          rel="noreferrer"
-        >
-          ＋ 加到 Google 日曆
-        </a>
         {segment.holidayNames.length > 0 && (
           <p className="detail-holidays">包含假日：{segment.holidayNames.join('、')}</p>
         )}

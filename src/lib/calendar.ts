@@ -2,27 +2,10 @@ import type { UserPlan } from '../data/types';
 import { annotationsForSegment, type BreakSegment } from './breaks';
 import { epochDayToISO, formatShort, isoToEpochDay, type ISODate } from './date';
 
-/** 行事曆匯出：.ics 檔（Google/Apple 日曆匯入）與 Google 日曆單筆加入連結 */
+/** 行事曆匯出：.ics 檔（Google/Apple 日曆匯入用） */
 
 const icsDate = (iso: ISODate) => iso.replaceAll('-', '');
 const dayAfter = (iso: ISODate) => epochDayToISO(isoToEpochDay(iso) + 1);
-
-/** 單段連假的 Google 日曆「加入活動」連結（全天事件，結束日為 exclusive） */
-export function gcalEventUrl(seg: BreakSegment, title: string, note: string): string {
-  const details = [
-    note.trim(),
-    seg.leaveDays.length ? `請特休：${seg.leaveDays.map(formatShort).join('、')}` : '',
-  ]
-    .filter(Boolean)
-    .join('\n');
-  const params = new URLSearchParams({
-    action: 'TEMPLATE',
-    text: title,
-    dates: `${icsDate(seg.start)}/${icsDate(dayAfter(seg.end))}`,
-    ...(details ? { details } : {}),
-  });
-  return `https://calendar.google.com/calendar/render?${params.toString()}`;
-}
 
 function escICS(s: string): string {
   return s
