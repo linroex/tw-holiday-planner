@@ -56,7 +56,8 @@ export function DayCell({
   if (isToday) classes.push('day-today');
   if (isSelected) classes.push('seg-selected');
 
-  const label = cellLabel(status, entry);
+  // 區段已命名 → 貼紙標籤代表整段，段內各日的假名／請假字樣一律隱藏以免雜亂
+  const label = segInfo?.name ? null : cellLabel(status, entry);
 
   return (
     <button type="button" className={classes.join(' ')} onClick={() => onTap(iso, status)}>
