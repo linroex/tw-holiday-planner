@@ -40,7 +40,7 @@ export function QuotaBar({
         {sheetOpen ? '收合' : `連假 ${breakCount}`}
       </button>
       <button type="button" className="btn-primary" onClick={onShare}>
-        分享
+        分享・匯出
       </button>
     </div>
   );

@@ -79,7 +79,7 @@ export function ShareSheet({ plan, segments, onClose }: Props) {
       <div className="sheet" onClick={(e) => e.stopPropagation()}>
         <div className="sheet-handle" />
         <div className="sheet-header">
-          <h3 className="sheet-title">分享</h3>
+          <h3 className="sheet-title">分享與匯出</h3>
           <button type="button" className="btn-text" onClick={onClose}>
             關閉
           </button>

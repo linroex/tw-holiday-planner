@@ -45,7 +45,7 @@ const TOUR_STEPS: TourStep[] = [
   {
     selector: '.quota-bar .btn-primary',
     title: '分享與匯出',
-    text: '推薦工具給朋友、分享你的行程（不含備註），或匯出 .ics 到 Google／Apple 日曆。',
+    text: '推薦工具給朋友、分享你的行程（不含備註），或把規劃匯出到 Google／Apple 日曆。',
   },
   {
     selector: '.year-select',
