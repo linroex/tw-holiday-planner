@@ -1,6 +1,10 @@
+import { SUPPORTED_YEARS } from '../data';
+
 interface Props {
   quota: number;
   firstRun: boolean;
+  year: number;
+  onSetYear: (year: number) => void;
   weekStart: 0 | 1;
   onSetWeekStart: (weekStart: 0 | 1) => void;
   onSetQuota: (quota: number) => void;
@@ -11,6 +15,8 @@ interface Props {
 export function SettingsSheet({
   quota,
   firstRun,
+  year,
+  onSetYear,
   weekStart,
   onSetWeekStart,
   onSetQuota,
@@ -56,6 +62,21 @@ export function SettingsSheet({
           </div>
         </div>
         <div className="field">
+          <span className="field-label">規劃年份（各年份的規劃分開儲存）</span>
+          <div className="segmented">
+            {SUPPORTED_YEARS.map((y) => (
+              <button
+                key={y}
+                type="button"
+                className={y === year ? 'segmented-on' : ''}
+                onClick={() => onSetYear(y)}
+              >
+                {y}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="field">
           <span className="field-label">每週從哪天開始</span>
           <div className="segmented">
             <button
@@ -89,7 +110,8 @@ export function SettingsSheet({
           </button>
         )}
         <p className="settings-footnote">
-          假日資料：行政院人事行政總處核定之民國116年（2027）辦公日曆表，全年放假 121 日。
+          假日資料：行政院人事行政總處核定之政府行政機關辦公日曆表
+          （2026 全年放假 120 日、2027 全年 121 日，均無補班日）。
         </p>
       </div>
     </div>

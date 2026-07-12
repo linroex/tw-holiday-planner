@@ -2,22 +2,63 @@ import { useRef, useState } from 'react';
 import type { UserPlan } from '../data/types';
 import type { BreakSegment } from '../lib/breaks';
 import { buildICS } from '../lib/calendar';
+import { encodePlanToHash } from '../lib/share';
 
 interface Props {
-  url: string;
   plan: UserPlan;
   segments: BreakSegment[];
   onClose: () => void;
 }
 
+/** 非安全來源（HTTP）也能用的複製 */
+async function copyText(text: string): Promise<void> {
+  if (window.isSecureContext && navigator.clipboard) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  const ok = document.execCommand('copy');
+  ta.remove();
+  if (!ok) throw new Error('copy-failed');
+}
+
 /**
- * 分享面板：顯示完整連結＋複製按鈕。
- * 剪貼簿優先用 navigator.clipboard（需 HTTPS），非安全來源（如區網 IP 試玩）
- * 退回 execCommand('copy')，兩者都失敗就全選讓使用者長按複製。
+ * 分享面板，三個區塊：
+ * 1. 推薦工具給朋友（純工具連結，不含任何個人資料）
+ * 2. 分享我的行程（備註可開關：給朋友關、轉移到自己其他裝置開）
+ * 3. 加入行事曆（.ics 匯出）
  */
-export function ShareSheet({ url, plan, segments, onClose }: Props) {
-  const inputRef = useRef<HTMLTextAreaElement>(null);
-  const [copied, setCopied] = useState(false);
+export function ShareSheet({ plan, segments, onClose }: Props) {
+  const planUrlRef = useRef<HTMLTextAreaElement>(null);
+  const [includeNotes, setIncludeNotes] = useState(false);
+  const [copied, setCopied] = useState<'tool' | 'plan' | null>(null);
+
+  const toolUrl = `${location.origin}${location.pathname}`;
+  const planUrl = `${toolUrl}${encodePlanToHash(plan, includeNotes)}`;
+  const canNativeShare = typeof navigator.share === 'function';
+
+  const copy = async (key: 'tool' | 'plan', text: string) => {
+    try {
+      await copyText(text);
+      setCopied(key);
+      setTimeout(() => setCopied((c) => (c === key ? null : c)), 2000);
+    } catch {
+      if (key === 'plan' && planUrlRef.current) {
+        planUrlRef.current.focus();
+        planUrlRef.current.setSelectionRange(0, planUrl.length);
+      }
+    }
+  };
+
+  const nativeShare = (title: string, url: string) => {
+    navigator.share({ title, url }).catch(() => {});
+  };
 
   const downloadICS = () => {
     const blob = new Blob([buildICS(plan, segments)], { type: 'text/calendar;charset=utf-8' });
@@ -28,82 +69,91 @@ export function ShareSheet({ url, plan, segments, onClose }: Props) {
     URL.revokeObjectURL(a.href);
   };
 
-  const selectAll = () => {
-    const el = inputRef.current;
-    if (el) {
-      el.focus();
-      el.setSelectionRange(0, url.length);
-    }
-  };
-
-  const copy = async () => {
-    try {
-      if (window.isSecureContext && navigator.clipboard) {
-        await navigator.clipboard.writeText(url);
-      } else {
-        selectAll();
-        if (!document.execCommand('copy')) throw new Error('copy-failed');
-      }
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      selectAll(); // 至少幫使用者全選好，長按即可複製
-    }
-  };
-
-  const canNativeShare = typeof navigator.share === 'function';
-
   return (
     <div className="sheet-backdrop" onClick={onClose}>
       <div className="sheet" onClick={(e) => e.stopPropagation()}>
         <div className="sheet-handle" />
         <div className="sheet-header">
-          <div>
-            <h3 className="sheet-title">分享我的規劃</h3>
-            <p className="sheet-subtitle">
-              朋友會看到唯讀版（含連假名稱，不含你的備註），可一鍵匯入
-            </p>
-          </div>
+          <h3 className="sheet-title">分享</h3>
           <button type="button" className="btn-text" onClick={onClose}>
             關閉
           </button>
         </div>
-        <label className="field">
-          <span className="field-label">分享連結（整份規劃都壓縮在網址裡）</span>
-          <textarea
-            ref={inputRef}
-            className="share-url"
-            readOnly
-            rows={4}
-            value={url}
-            onFocus={selectAll}
-          />
-        </label>
-        <div className="share-actions">
-          <button type="button" className="btn-primary share-copy" onClick={copy}>
-            {copied ? '已複製 ✓' : '複製連結'}
-          </button>
-          {canNativeShare && (
+
+        <div className="share-section">
+          <span className="field-label">① 覺得工具好用，推薦給朋友</span>
+          <p className="share-hint">只分享工具本身，不含你的任何規劃資料</p>
+          <div className="share-actions">
             <button
               type="button"
-              className="btn-secondary"
-              onClick={() => navigator.share({ title: '我的連假規劃', url }).catch(() => {})}
+              className="btn-secondary share-tool-copy"
+              onClick={() => copy('tool', toolUrl)}
             >
-              用其他 App 分享
+              {copied === 'tool' ? '已複製 ✓' : '複製工具連結'}
             </button>
-          )}
+            {canNativeShare && (
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => nativeShare('2027 台灣連假規劃工具', toolUrl)}
+              >
+                分享…
+              </button>
+            )}
+          </div>
         </div>
-        <p className="settings-footnote">
-          提醒：複製時要包含 <code>#share=</code> 後面的整段文字，資料才帶得過去。
-        </p>
-        <div className="export-section">
-          <span className="field-label">匯出到行事曆</span>
+
+        <div className="share-section">
+          <span className="field-label">② 分享我的行程</span>
+          <label className="toggle-row">
+            <input
+              type="checkbox"
+              checked={includeNotes}
+              onChange={(e) => setIncludeNotes(e.target.checked)}
+            />
+            包含備註（把行程轉移到電腦／其他裝置時再開）
+          </label>
+          <textarea
+            ref={planUrlRef}
+            className="share-url"
+            readOnly
+            rows={3}
+            value={planUrl}
+            onFocus={() => planUrlRef.current?.setSelectionRange(0, planUrl.length)}
+          />
+          <div className="share-actions">
+            <button
+              type="button"
+              className="btn-primary share-copy"
+              onClick={() => copy('plan', planUrl)}
+            >
+              {copied === 'plan' ? '已複製 ✓' : '複製行程連結'}
+            </button>
+            {canNativeShare && (
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => nativeShare(`我的 ${plan.year} 連假規劃`, planUrl)}
+              >
+                分享…
+              </button>
+            )}
+          </div>
+          <p className="share-hint">
+            {includeNotes
+              ? '⚠️ 這個連結包含你的備註內容，建議只傳給自己的裝置'
+              : '朋友打開是唯讀檢視（看得到行程名稱，看不到備註），可一鍵匯入'}
+          </p>
+        </div>
+
+        <div className="share-section">
+          <span className="field-label">③ 加入行事曆</span>
           <button type="button" className="btn-secondary export-ics" onClick={downloadICS}>
-            下載 .ics 檔（匯入 Google／Apple 日曆）
+            下載 .ics 檔（Google／Apple 日曆）
           </button>
-          <p className="settings-footnote">
-            會匯出有命名或有請假的連假段為全天事件。Google 日曆：設定 → 匯入與匯出 →
-            選擇這個檔案；手機上直接開啟檔案即可加入。
+          <p className="share-hint">
+            匯出有命名或有請假的連假為全天事件（含備註）。Google 日曆：設定 → 匯入與匯出；
+            手機直接開啟檔案即可加入。
           </p>
         </div>
       </div>

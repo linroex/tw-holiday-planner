@@ -28,6 +28,11 @@ describe('分享連結編解碼', () => {
     expect(hash).not.toContain('布里斯本');
   });
 
+  it('includeNotes=true 時備註完整保留（轉移到其他裝置用）', () => {
+    const decoded = decodeShareHash(encodePlanToHash(samplePlan, true))!;
+    expect(decoded.annotations).toEqual(samplePlan.annotations);
+  });
+
   it('只有備註沒有名稱的 annotation 不進分享連結', () => {
     const plan: UserPlan = {
       ...samplePlan,

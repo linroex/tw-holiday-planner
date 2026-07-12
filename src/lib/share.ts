@@ -5,7 +5,8 @@ import { epochDayToISO, isoToEpochDay, toEpochDay } from './date';
 /**
  * 分享連結：plan 精簡化（日期轉「距 1/1 天數」整數、欄位縮寫）
  * → JSON → lz-string base64url → 放在 hash fragment（不上伺服器、不干擾快取）。
- * 備註不進分享連結：常含預算等私人資訊，只分享連假名稱。
+ * 備註預設不進分享連結（常含預算等私人資訊）；
+ * includeNotes=true 用於把行程轉移到自己的其他裝置。
  */
 
 const HASH_PREFIX = '#share=';
@@ -15,11 +16,11 @@ interface SharePayloadV1 {
   y: number;
   q: number;
   l: number[];
-  /** [錨定日 offset, 連假名稱]；舊版連結可能是三元組（含備註），解碼時相容 */
+  /** [錨定日 offset, 連假名稱, 備註?]；備註只在 includeNotes 時存在 */
   a: [number, string, string?][];
 }
 
-export function encodePlanToHash(plan: UserPlan): string {
+export function encodePlanToHash(plan: UserPlan, includeNotes = false): string {
   const jan1 = toEpochDay(plan.year, 1, 1);
   const payload: SharePayloadV1 = {
     v: 1,
@@ -27,8 +28,12 @@ export function encodePlanToHash(plan: UserPlan): string {
     q: plan.annualLeaveQuota,
     l: plan.leaveDays.map((d) => isoToEpochDay(d) - jan1),
     a: plan.annotations
-      .filter((a) => a.name.trim()) // 只有備註沒有名稱的不用分享
-      .map((a) => [isoToEpochDay(a.anchorDate) - jan1, a.name]),
+      .filter((a) => a.name.trim() || (includeNotes && a.note.trim()))
+      .map((a) =>
+        includeNotes
+          ? [isoToEpochDay(a.anchorDate) - jan1, a.name, a.note]
+          : [isoToEpochDay(a.anchorDate) - jan1, a.name],
+      ),
   };
   return HASH_PREFIX + LZString.compressToEncodedURIComponent(JSON.stringify(payload));
 }

@@ -1,9 +1,11 @@
 import type { HolidayEntry, HolidayYearData } from './types';
 import type { ISODate } from '../lib/date';
+import { holidays2026 } from './holidays-2026';
 import { holidays2027 } from './holidays-2027';
 
 /** 新增年份時：加一個 holidays-XXXX.ts 檔，在這裡註冊一行即可 */
 export const holidayRegistry: Record<number, HolidayYearData> = {
+  2026: holidays2026,
   2027: holidays2027,
 };
 

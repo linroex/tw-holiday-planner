@@ -41,6 +41,8 @@ export function loadPlan(year: number): UserPlan | null {
 export interface DisplaySettings {
   /** 每週起始日：0=週日、1=週一 */
   weekStart: 0 | 1;
+  /** 上次規劃的年份，下次開啟時回到同一年 */
+  lastYear?: number;
 }
 
 const SETTINGS_KEY = 'thp.settings';
@@ -51,8 +53,11 @@ export function loadSettings(): DisplaySettings {
     if (raw) {
       const s: unknown = JSON.parse(raw);
       if (typeof s === 'object' && s !== null) {
-        const ws = (s as { weekStart?: unknown }).weekStart;
-        if (ws === 0 || ws === 1) return { weekStart: ws };
+        const { weekStart, lastYear } = s as { weekStart?: unknown; lastYear?: unknown };
+        return {
+          weekStart: weekStart === 0 || weekStart === 1 ? weekStart : 1,
+          ...(typeof lastYear === 'number' ? { lastYear } : {}),
+        };
       }
     }
   } catch {

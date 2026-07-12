@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getHolidayMap } from '../../data';
+import { holidays2026 } from '../../data/holidays-2026';
 import { holidays2027 } from '../../data/holidays-2027';
 import { toEpochDay } from '../date';
 import { getDayStatus, isDayOff } from '../dayStatus';
@@ -11,14 +12,47 @@ function findSeg(segs: BreakSegment[], start: string): BreakSegment | undefined 
   return segs.find((s) => s.start === start);
 }
 
-describe('2027 假日資料自我驗證', () => {
-  it('全年放假日數等於官方核定的 121 日', () => {
+describe('假日資料自我驗證（對照官方核定放假日數）', () => {
+  it.each([
+    [2026, holidays2026.totalDaysOff], // 120
+    [2027, holidays2027.totalDaysOff], // 121
+  ])('%i 年全年放假日數 = %i', (year, expected) => {
     const map = getHolidayMap();
     let count = 0;
-    for (let d = toEpochDay(2027, 1, 1); d <= toEpochDay(2027, 12, 31); d++) {
+    for (let d = toEpochDay(year, 1, 1); d <= toEpochDay(year, 12, 31); d++) {
       if (isDayOff(getDayStatus(d, map, EMPTY))) count++;
     }
-    expect(count).toBe(holidays2027.totalDaysOff);
+    expect(count).toBe(expected);
+  });
+});
+
+describe('detectBreaks — 2026 基準段', () => {
+  const segs = detectBreaks(2026, []);
+
+  it('官方公告的九個 3 日以上連假', () => {
+    const expected: [string, string, number][] = [
+      ['2026-02-14', '2026-02-22', 9], // 春節
+      ['2026-02-27', '2026-03-01', 3], // 228
+      ['2026-04-03', '2026-04-06', 4], // 清明兒童節
+      ['2026-05-01', '2026-05-03', 3], // 勞動節（五）
+      ['2026-06-19', '2026-06-21', 3], // 端午（五）
+      ['2026-09-25', '2026-09-28', 4], // 中秋＋教師節
+      ['2026-10-09', '2026-10-11', 3], // 國慶
+      ['2026-10-24', '2026-10-26', 3], // 光復節
+      ['2026-12-25', '2026-12-27', 3], // 行憲紀念日
+    ];
+    for (const [start, end, days] of expected) {
+      const seg = findSeg(segs, start);
+      expect(seg, `應存在起於 ${start} 的連假段`).toBeDefined();
+      expect(seg!.end).toBe(end);
+      expect(seg!.totalDays).toBe(days);
+    }
+  });
+
+  it('元旦（四）為週間單日假；跨年尾連到 2027 元旦連假', () => {
+    expect(findSeg(segs, '2026-01-01')!.totalDays).toBe(1);
+    // 2027-01-01（五）在 registry 中 → 2027/1/1–1/3 與 2026 年尾無相連（12/31 四為上班日）
+    expect(findSeg(segs, '2026-09-25')!.defaultName).toBe('中秋教師節連假');
   });
 });
 

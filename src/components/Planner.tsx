@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { detectBreaks, type BreakSegment } from '../lib/breaks';
 import { isoToEpochDay, fromEpochDay, type ISODate } from '../lib/date';
 import { isMarkable, type DayStatus } from '../lib/dayStatus';
-import { encodePlanToHash } from '../lib/share';
 import { loadSettings, saveSettings, type DisplaySettings } from '../lib/storage';
 import { getHolidayMap } from '../data';
 import { usePlan } from '../state/PlanContext';
@@ -13,7 +12,7 @@ import { SettingsSheet } from './SettingsSheet';
 import { ShareSheet } from './ShareSheet';
 import { monthElementId, YearCalendar } from './YearCalendar';
 
-export function Planner() {
+export function Planner({ onChangeYear }: { onChangeYear: (year: number) => void }) {
   const { plan, dispatch, firstRun } = usePlan();
   const [listOpen, setListOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(firstRun);
@@ -82,7 +81,6 @@ export function Planner() {
       ?.scrollIntoView({ block: 'start', behavior: 'smooth' });
   };
 
-  const shareUrl = () => `${location.origin}${location.pathname}${encodePlanToHash(plan)}`;
 
   return (
     <div className="app">
@@ -134,12 +132,7 @@ export function Planner() {
       />
 
       {shareOpen && (
-        <ShareSheet
-          url={shareUrl()}
-          plan={plan}
-          segments={segments}
-          onClose={() => setShareOpen(false)}
-        />
+        <ShareSheet plan={plan} segments={segments} onClose={() => setShareOpen(false)} />
       )}
 
       {activeSegment && (
@@ -160,6 +153,8 @@ export function Planner() {
         <SettingsSheet
           quota={plan.annualLeaveQuota}
           firstRun={!onboarded}
+          year={plan.year}
+          onSetYear={onChangeYear}
           weekStart={settings.weekStart}
           onSetWeekStart={(weekStart) => updateSettings({ ...settings, weekStart })}
           onSetQuota={(quota) => dispatch({ type: 'set-quota', quota })}
