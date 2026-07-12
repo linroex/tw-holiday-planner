@@ -337,7 +337,6 @@ export function Planner() {
             setOnboarded(true);
             setTourActive(true);
           }}
-          onOpenHelp={() => setHelpOpen(true)}
           onReset={() => {
             // 完整重置：所有年份的規劃＋顯示偏好一併清除，重載後回到首次使用引導
             clearAllData();

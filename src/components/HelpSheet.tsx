@@ -30,6 +30,40 @@ const LEGEND: { className: string; label: string; desc: string }[] = [
   { className: 'legend-streak', label: '4', desc: '連假色帶（相連的休假）' },
 ];
 
+/** 使用說明的內容本體：說明 sheet 與首次引導共用，改文字只改這裡 */
+export function HelpContent() {
+  return (
+    <>
+      <ol className="help-steps">
+        {STEPS.map(([title, desc]) => (
+          <li key={title}>
+            <b>{title}</b>
+            <p>{desc}</p>
+          </li>
+        ))}
+      </ol>
+
+      <div className="help-legend">
+        <span className="field-label">顏色圖例</span>
+        <ul>
+          {LEGEND.map(({ className, label, desc }) => (
+            <li key={className}>
+              <span className={`legend-chip ${className}`}>{label}</span>
+              <span>{desc}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <p className="settings-footnote">
+        放假日以行政院人事行政總處核定的辦公日曆表為準（2026 全年 120 日、2027 全年 121
+        日，均無補班日）；勞基法適用的公司請假規定可能略有不同。 2028 年行事曆預計 2027
+        年年中由政府公告，屆時會更新進來。
+      </p>
+    </>
+  );
+}
+
 export function HelpSheet({ onClose, onReplayTour }: Props) {
   return (
     <div className="sheet-backdrop" onClick={onClose}>
@@ -46,31 +80,31 @@ export function HelpSheet({ onClose, onReplayTour }: Props) {
           🧭 播放互動導覽（直接在畫面上指給你看）
         </button>
 
-        <ol className="help-steps">
-          {STEPS.map(([title, desc]) => (
-            <li key={title}>
-              <b>{title}</b>
-              <p>{desc}</p>
-            </li>
-          ))}
-        </ol>
+        <HelpContent />
 
-        <div className="help-legend">
-          <span className="field-label">顏色圖例</span>
-          <ul>
-            {LEGEND.map(({ className, label, desc }) => (
-              <li key={className}>
-                <span className={`legend-chip ${className}`}>{label}</span>
-                <span>{desc}</span>
-              </li>
-            ))}
-          </ul>
+        <div className="about-section">
+          <span className="field-label">隱私</span>
+          <p className="about-text">
+            所有規劃資料<b>只儲存在你自己的裝置上</b>（瀏覽器的 localStorage）——
+            沒有伺服器、不上傳、不追蹤。分享連結是把資料壓縮進網址裡，
+            要不要給人、給誰，完全由你決定。
+          </p>
         </div>
-
-        <p className="settings-footnote">
-          放假日以行政院人事行政總處核定的辦公日曆表為準；勞基法適用的公司請假規定可能略有不同。
-          2028 年行事曆預計 2027 年年中由政府公告，屆時會更新進來。
-        </p>
+        <div className="about-section">
+          <span className="field-label">關於</span>
+          <p className="about-text">
+            這是開源的小工具，覺得好用歡迎到 GitHub 給顆 ⭐️
+            支持，遇到問題或想要新功能也歡迎開 issue 告訴我們！
+          </p>
+          <a
+            className="about-link"
+            href="https://github.com/linroex/tw-holiday-planner"
+            target="_blank"
+            rel="noreferrer"
+          >
+            ⭐️ GitHub：linroex/tw-holiday-planner
+          </a>
+        </div>
       </div>
     </div>
   );
