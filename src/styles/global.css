@@ -27,6 +27,12 @@
   --wobble-sm: 10px 13px 11px 14px / 13px 10px 14px 11px;
   --wobble-md: 14px 17px 13px 18px / 17px 13px 18px 14px;
   --wobble-lg: 22px 26px 20px 28px / 26px 20px 28px 22px;
+
+  /* 字體階層：手寫體給展示元素（月曆、標題、按鈕），內文用黑體確保易讀 */
+  --font-hand: 'LXGW WenKai TC', 'DFKai-SB', 'PingFang TC', serif;
+  --font-body:
+    -apple-system, 'PingFang TC', 'Noto Sans TC', 'Microsoft JhengHei',
+    system-ui, sans-serif;
 }
 
 * {
@@ -45,9 +51,7 @@ body {
 }
 
 body {
-  font-family:
-    'LXGW WenKai TC', 'Yu Kyokasho', 'DFKai-SB', 'PingFang TC',
-    'Noto Sans TC', system-ui, sans-serif;
+  font-family: var(--font-body);
   /* 手帳點格紙 */
   background-color: var(--c-bg);
   background-image: radial-gradient(#dcd0b2 1px, transparent 1px);
@@ -67,6 +71,29 @@ button {
   background: none;
   border: none;
   cursor: pointer;
+}
+
+/* 手寫體只給展示元素：月曆、標題、按鈕、徽章——內文維持黑體易讀 */
+.header-title,
+.year-select,
+.month-title,
+.weekday,
+.day,
+.seg-name,
+.sheet-title,
+.tour-title,
+.btn-primary,
+.btn-secondary,
+.btn-text,
+.stepper-value,
+.quota-line,
+.badge,
+.break-name,
+.future-note b,
+.help-steps b,
+.toast,
+.field-label {
+  font-family: var(--font-hand);
 }
 
 input,
