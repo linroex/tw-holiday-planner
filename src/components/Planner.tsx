@@ -210,6 +210,13 @@ export function Planner() {
           weekStart={settings.weekStart}
           onDayTap={handleDayTap}
         />
+        <div className="future-note">
+          <b>2028 年的假期呢？</b>
+          <p>
+            行政院人事行政總處通常在<b>前一年 5–6 月</b>核定公告次年的辦公日曆表，
+            2028 年版預計 <b>2027 年年中</b>公布，公告後就會更新進來，不用來問囉 😉
+          </p>
+        </div>
       </main>
 
       {listOpen && (

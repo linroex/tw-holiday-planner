@@ -64,6 +64,7 @@ export function HelpSheet({ onClose }: Props) {
 
         <p className="settings-footnote">
           放假日以行政院人事行政總處核定的辦公日曆表為準；勞基法適用的公司請假規定可能略有不同。
+          2028 年行事曆預計 2027 年年中由政府公告，屆時會更新進來。
         </p>
       </div>
     </div>

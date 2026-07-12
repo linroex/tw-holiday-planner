@@ -548,6 +548,25 @@ textarea {
   color: var(--c-muted);
 }
 
+/* ── 2028 預告卡片（月曆底部） ── */
+.future-note {
+  margin: 8px 12px 24px;
+  padding: 14px 16px;
+  border: 1px dashed var(--c-border);
+  border-radius: 14px;
+  background: var(--c-surface);
+}
+
+.future-note b {
+  font-size: 14px;
+}
+
+.future-note p {
+  font-size: 13px;
+  color: var(--c-muted);
+  margin-top: 4px;
+}
+
 /* ── 使用說明 ── */
 .help-steps {
   list-style: none;

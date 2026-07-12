@@ -118,6 +118,7 @@ export function SettingsSheet({
         <p className="settings-footnote">
           假日資料：行政院人事行政總處核定之政府行政機關辦公日曆表
           （2026 全年放假 120 日、2027 全年 121 日，均無補班日）。
+          2028 年行事曆預計 2027 年年中公告後更新。
         </p>
       </div>
     </div>
