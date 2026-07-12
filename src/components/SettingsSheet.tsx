@@ -92,6 +92,29 @@ export function SettingsSheet({
             清除所有規劃與設定
           </button>
         )}
+        <div className="about-section">
+          <span className="field-label">隱私</span>
+          <p className="about-text">
+            所有規劃資料<b>只儲存在你自己的裝置上</b>（瀏覽器的 localStorage）——
+            沒有伺服器、不上傳、不追蹤。分享連結是把資料壓縮進網址裡，
+            要不要給人、給誰，完全由你決定。
+          </p>
+        </div>
+        <div className="about-section">
+          <span className="field-label">關於</span>
+          <p className="about-text">
+            這是開源的小工具，覺得好用歡迎到 GitHub 給顆 ⭐️
+            支持，遇到問題或想要新功能也歡迎開 issue 告訴我們！
+          </p>
+          <a
+            className="about-link"
+            href="https://github.com/linroex/tw-holiday-planner"
+            target="_blank"
+            rel="noreferrer"
+          >
+            ⭐️ GitHub：linroex/tw-holiday-planner
+          </a>
+        </div>
         <p className="settings-footnote">
           假日資料：行政院人事行政總處核定之政府行政機關辦公日曆表
           （2026 全年放假 120 日、2027 全年 121 日，均無補班日）。

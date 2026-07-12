@@ -538,6 +538,34 @@ textarea {
   color: var(--c-muted);
 }
 
+/* ── 關於區塊 ── */
+.about-section {
+  margin-top: 16px;
+  border-top: 1px dashed var(--c-border);
+  padding-top: 12px;
+}
+
+.about-text {
+  font-size: 14px;
+  margin: 4px 0 10px;
+}
+
+.about-link {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  min-height: 44px;
+  line-height: 44px;
+  border-radius: 12px;
+  background: var(--c-holiday-bg);
+  color: var(--c-accent);
+  font-weight: 600;
+}
+
+.about-link:active {
+  filter: brightness(0.95);
+}
+
 /* ── 分享面板 ── */
 .share-section {
   padding: 12px 0;

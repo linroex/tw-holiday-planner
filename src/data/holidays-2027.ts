@@ -27,8 +27,7 @@ export const holidays2027: HolidayYearData = {
     { date: '2027-04-06', name: '兒童節', kind: 'makeup-holiday', group: '清明' },
 
     { date: '2027-04-30', name: '勞動節', kind: 'makeup-holiday', group: '勞動節' },
-    // 勞動節適逢週六，已是假日 → 月曆上當一般週末顯示（補假 4/30 照常標示）
-    { date: '2027-05-01', name: '勞動節', kind: 'holiday', group: '勞動節', muted: true },
+    { date: '2027-05-01', name: '勞動節', kind: 'holiday', group: '勞動節' },
 
     { date: '2027-06-09', name: '端午節', kind: 'holiday', group: '端午' },
     { date: '2027-09-15', name: '中秋節', kind: 'holiday', group: '中秋' },
