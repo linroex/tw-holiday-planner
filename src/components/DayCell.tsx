@@ -66,6 +66,8 @@ export function DayCell({
   // 並在該列的區段範圍內置中（長區段每一列都看得到名稱）
   const showName =
     !!segInfo?.name && (segInfo.isStart || weekday === weekStart || isMonthStart);
+  // 掛事件條的格子整格提升層級，避免被同列較後的（有 transform 的）請假格蓋住
+  if (showName) classes.push('day-hosts-name');
 
   return (
     <button type="button" className={classes.join(' ')} onClick={() => onTap(iso, status)}>

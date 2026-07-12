@@ -184,6 +184,11 @@
   background: linear-gradient(to left, var(--band) 45%, transparent);
 }
 
+/* 掛事件條的格子提升層級：事件條才不會被同列較後的請假格（有 transform）蓋住 */
+.day-hosts-name {
+  z-index: 3;
+}
+
 /* 行程名稱：貼紙在該列的區段範圍內置中（寬度由 DayCell 依列跨格數計算） */
 .seg-name-row {
   position: absolute;
