@@ -34,6 +34,11 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 
+html,
+body {
+  height: 100%;
+}
+
 body {
   font-family:
     -apple-system, 'PingFang TC', 'Noto Sans TC', 'Microsoft JhengHei',
@@ -42,6 +47,10 @@ body {
   color: var(--c-text);
   line-height: 1.5;
   -webkit-tap-highlight-color: transparent;
+  /* App shell：整頁不捲動，捲動交給 .calendar-scroll。
+     iOS in-app browser（LINE、SFSafariViewController）的視口高度會隨工具列伸縮，
+     position:fixed 的底列會被釘錯位置——內部捲動完全避開這個問題 */
+  overflow: hidden;
 }
 
 button {
@@ -59,26 +68,24 @@ textarea {
 }
 
 .app {
-  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   max-width: 560px;
   margin: 0 auto;
+  position: relative; /* .break-panel 的定位基準 */
 }
 
 /* ── Header ── */
 .header {
-  position: sticky;
-  top: 0;
-  z-index: 20;
+  flex-shrink: 0;
   height: var(--header-h);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 16px;
-  background: color-mix(in srgb, var(--c-bg) 88%, transparent);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: var(--c-bg);
   border-bottom: 1px solid var(--c-border);
 }
 
@@ -105,10 +112,14 @@ textarea {
   background: var(--c-surface);
 }
 
-/* ── 主捲動區 ── */
+/* ── 主捲動區（App 內唯一捲動的元素） ── */
 .calendar-scroll {
   flex: 1;
-  padding-bottom: calc(var(--quota-h) + env(safe-area-inset-bottom) + 16px);
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding-bottom: 24px;
 }
 
 .usage-hint {
@@ -118,15 +129,10 @@ textarea {
   padding: 10px 16px 0;
 }
 
-/* ── 底部特休列 ── */
+/* ── 底部特休列（flex 夾層，不用 fixed，避免 in-app browser 定位問題） ── */
 .quota-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  flex-shrink: 0;
   z-index: 30;
-  max-width: 560px;
-  margin: 0 auto;
   min-height: var(--quota-h);
   display: flex;
   align-items: center;
@@ -203,15 +209,13 @@ textarea {
   font-weight: 600;
 }
 
-/* ── 連假清單面板（QuotaBar 上方） ── */
+/* ── 連假清單面板（QuotaBar 上方，錨定在 .app 內） ── */
 .break-panel {
-  position: fixed;
+  position: absolute;
   bottom: calc(var(--quota-h) + env(safe-area-inset-bottom));
   left: 0;
   right: 0;
   z-index: 25;
-  max-width: 560px;
-  margin: 0 auto;
   max-height: 55dvh;
   overflow-y: auto;
   background: var(--c-surface);
@@ -523,24 +527,33 @@ textarea {
 }
 
 .decode-error {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 60;
   background: #fff1f0;
   color: var(--c-danger);
   font-size: 13px;
   text-align: center;
   padding: 8px 16px;
+  border-bottom: 1px solid #ffccc7;
 }
 
 /* ── 桌面版：放寬版心，一次看整年 ── */
 @media (min-width: 900px) {
-  .app,
-  .quota-bar {
+  .app {
     max-width: 1100px;
+  }
+
+  .break-panel {
+    max-width: 560px;
+    margin: 0 auto;
   }
 }
 
 @media (min-width: 1320px) {
-  .app,
-  .quota-bar {
+  .app {
     max-width: 1440px;
   }
 }

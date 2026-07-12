@@ -4,7 +4,7 @@
 
 .month {
   margin-top: 18px;
-  scroll-margin-top: var(--header-h);
+  scroll-margin-top: 8px; /* header 已不覆蓋捲動區 */
 }
 
 .month-title {
