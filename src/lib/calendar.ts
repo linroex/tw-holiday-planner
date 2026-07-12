@@ -25,8 +25,9 @@ function fold(line: string): string {
   return out.join('\r\n');
 }
 
-/** 匯出有規劃（有命名或有請假）的連假段為全天事件 */
-export function buildICS(plan: UserPlan, segments: BreakSegment[]): string {
+/** 匯出有規劃（有命名或有請假）的連假段為全天事件（所有年份） */
+export function buildICS(plans: UserPlan[], segments: BreakSegment[]): string {
+  const annotations = plans.flatMap((p) => p.annotations);
   const stamp = `${new Date().toISOString().slice(0, 19).replace(/[-:]/g, '')}Z`;
   const lines = [
     'BEGIN:VCALENDAR',
@@ -35,7 +36,7 @@ export function buildICS(plan: UserPlan, segments: BreakSegment[]): string {
     'CALSCALE:GREGORIAN',
   ];
   for (const seg of segments) {
-    const anns = annotationsForSegment(seg, plan.annotations);
+    const anns = annotationsForSegment(seg, annotations);
     const named = anns.find((a) => a.name.trim());
     if (!named && seg.leaveDays.length === 0) continue;
     const title = named?.name.trim() ?? seg.defaultName;
@@ -47,7 +48,7 @@ export function buildICS(plan: UserPlan, segments: BreakSegment[]): string {
       .join('\n');
     lines.push(
       'BEGIN:VEVENT',
-      `UID:thp-${plan.year}-${icsDate(seg.start)}@tw-holiday-planner`,
+      `UID:thp-${icsDate(seg.start)}@tw-holiday-planner`,
       `DTSTAMP:${stamp}`,
       `DTSTART;VALUE=DATE:${icsDate(seg.start)}`,
       `DTEND;VALUE=DATE:${icsDate(dayAfter(seg.end))}`,

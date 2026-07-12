@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { UserPlan } from '../../data/types';
-import { decodeShareHash, encodePlanToHash } from '../share';
+import { decodeShareHash, encodeBackupHash, encodePlanToHash } from '../share';
 
 const samplePlan: UserPlan = {
   version: 1,
@@ -17,7 +17,8 @@ describe('分享連結編解碼', () => {
   it('roundtrip：請假日與連假名稱保留，備註不進分享連結', () => {
     const hash = encodePlanToHash(samplePlan);
     expect(hash.startsWith('#share=')).toBe(true);
-    const { plan: decoded, isBackup } = decodeShareHash(hash)!;
+    const { plans, isBackup } = decodeShareHash(hash)!;
+    const decoded = plans[0]!;
     expect(isBackup).toBe(false);
     expect(decoded.year).toBe(2027);
     expect(decoded.annualLeaveQuota).toBe(10);
@@ -29,16 +30,25 @@ describe('分享連結編解碼', () => {
     expect(hash).not.toContain('布里斯本');
   });
 
-  it('includeNotes=true 時備註完整保留（轉移到其他裝置用）', () => {
+  it('includeNotes=true 時備註完整保留', () => {
     const decoded = decodeShareHash(encodePlanToHash(samplePlan, true))!;
-    expect(decoded.plan.annotations).toEqual(samplePlan.annotations);
+    expect(decoded.plans[0]!.annotations).toEqual(samplePlan.annotations);
   });
 
-  it('備份連結帶 isBackup 標記；分享與舊版連結為 false', () => {
-    const backup = decodeShareHash(encodePlanToHash(samplePlan, true, 'backup'))!;
-    expect(backup.isBackup).toBe(true);
-    expect(backup.plan.annotations).toEqual(samplePlan.annotations);
-    const share = decodeShareHash(encodePlanToHash(samplePlan, false, 'share'))!;
+  it('備份連結：全年份、含備註、帶 isBackup 標記', () => {
+    const other: UserPlan = {
+      version: 1,
+      year: 2026,
+      annualLeaveQuota: 5,
+      leaveDays: ['2026-10-08'],
+      annotations: [{ anchorDate: '2026-10-10', name: '露營', note: '訂營位' }],
+    };
+    const decoded = decodeShareHash(encodeBackupHash([other, samplePlan]))!;
+    expect(decoded.isBackup).toBe(true);
+    expect(decoded.plans).toHaveLength(2);
+    expect(decoded.plans[0]).toEqual(other); // 備註完整保留
+    expect(decoded.plans[1]).toEqual(samplePlan);
+    const share = decodeShareHash(encodePlanToHash(samplePlan))!;
     expect(share.isBackup).toBe(false);
   });
 
@@ -47,7 +57,7 @@ describe('分享連結編解碼', () => {
       ...samplePlan,
       annotations: [{ anchorDate: '2027-06-09', name: '', note: '私人備忘' }],
     };
-    expect(decodeShareHash(encodePlanToHash(plan))!.plan.annotations).toEqual([]);
+    expect(decodeShareHash(encodePlanToHash(plan))!.plans[0]!.annotations).toEqual([]);
   });
 
   it('舊版三元組（含備註）連結仍可解碼', async () => {
@@ -60,7 +70,7 @@ describe('分享連結編解碼', () => {
       );
     const decoded = decodeShareHash(legacy)!;
     expect(decoded.isBackup).toBe(false);
-    expect(decoded.plan.annotations).toEqual([
+    expect(decoded.plans[0]!.annotations).toEqual([
       { anchorDate: '2027-04-04', name: '澳洲', note: '舊備註' },
     ]);
   });
@@ -73,7 +83,7 @@ describe('分享連結編解碼', () => {
       leaveDays: [],
       annotations: [],
     };
-    expect(decodeShareHash(encodePlanToHash(plan))!.plan).toEqual(plan);
+    expect(decodeShareHash(encodePlanToHash(plan))!.plans[0]).toEqual(plan);
   });
 
   it('壞字串回傳 null 不 throw', () => {

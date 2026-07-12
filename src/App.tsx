@@ -9,12 +9,15 @@ export default function App() {
   const [decoded] = useState(() => {
     const d = decodeShareHash(location.hash);
     if (d?.isBackup) {
-      // 備份連結＋本機沒有該年份資料 → 沒有覆蓋風險，直接還原進入 App
-      const existing = loadPlan(d.plan.year);
-      const isEmpty =
-        !existing || (existing.leaveDays.length === 0 && existing.annotations.length === 0);
-      if (isEmpty) {
-        savePlan(d.plan);
+      // 備份連結＋本機所有年份都沒資料 → 沒有覆蓋風險，直接還原進入 App
+      const allEmpty = d.plans.every((plan) => {
+        const existing = loadPlan(plan.year);
+        return (
+          !existing || (existing.leaveDays.length === 0 && existing.annotations.length === 0)
+        );
+      });
+      if (allEmpty) {
+        for (const plan of d.plans) savePlan(plan);
         history.replaceState(null, '', location.pathname + location.search);
         return null;
       }
@@ -23,7 +26,7 @@ export default function App() {
   });
   const [decodeFailed] = useState(() => location.hash.startsWith('#share=') && !decoded);
 
-  if (decoded) return <ShareView plan={decoded.plan} isBackup={decoded.isBackup} />;
+  if (decoded) return <ShareView plans={decoded.plans} isBackup={decoded.isBackup} />;
 
   return (
     <PlanProvider>

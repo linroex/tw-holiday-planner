@@ -15,7 +15,7 @@ const plan: UserPlan = {
 
 describe('buildICS', () => {
   const segments = detectBreaks(plan.year, plan.leaveDays);
-  const ics = buildICS(plan, segments);
+  const ics = buildICS([plan], segments);
 
   it('只匯出有命名或有請假的段（清明澳洲段一筆）', () => {
     expect(ics.match(/BEGIN:VEVENT/g)).toHaveLength(1);

@@ -2,24 +2,25 @@ import { useRef, useState } from 'react';
 import type { UserPlan } from '../data/types';
 import { copyText } from '../lib/clipboard';
 import { buildICS } from '../lib/calendar';
-import { encodePlanToHash } from '../lib/share';
+import { encodeBackupHash } from '../lib/share';
 import type { BreakSegment } from '../lib/breaks';
 
 interface Props {
-  plan: UserPlan;
+  /** 所有年份的規劃——備份一律全帶 */
+  plans: UserPlan[];
   segments: BreakSegment[];
   onClose: () => void;
 }
 
 /**
- * 匯出面板：給自己用的兩件事——備份連結（含備註快照，打開即還原）、下載 .ics。
- * 給朋友的在「分享」面板（不含備註），兩者分開後不需要任何勾選。
+ * 匯出面板：給自己用的兩件事——備份連結（全部年份、含備註，打開即還原）、下載 .ics。
+ * 給朋友的在「分享」面板（單一年份、不含備註），兩者分開後不需要任何勾選。
  */
-export function ExportSheet({ plan, segments, onClose }: Props) {
+export function ExportSheet({ plans, segments, onClose }: Props) {
   const urlRef = useRef<HTMLTextAreaElement>(null);
   const [copied, setCopied] = useState(false);
 
-  const exportUrl = `${location.origin}${location.pathname}?utm_source=share&utm_medium=app&utm_campaign=export_link${encodePlanToHash(plan, true, 'backup')}`;
+  const exportUrl = `${location.origin}${location.pathname}?utm_source=share&utm_medium=app&utm_campaign=export_link${encodeBackupHash(plans)}`;
 
   const copy = async () => {
     try {
@@ -33,10 +34,10 @@ export function ExportSheet({ plan, segments, onClose }: Props) {
   };
 
   const downloadICS = () => {
-    const blob = new Blob([buildICS(plan, segments)], { type: 'text/calendar;charset=utf-8' });
+    const blob = new Blob([buildICS(plans, segments)], { type: 'text/calendar;charset=utf-8' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `${plan.year}-連假規劃.ics`;
+    a.download = '連假規劃.ics';
     a.click();
     URL.revokeObjectURL(a.href);
   };
@@ -53,9 +54,9 @@ export function ExportSheet({ plan, segments, onClose }: Props) {
         </div>
 
         <div className="share-section">
-          <span className="field-label">① 備份連結</span>
+          <span className="field-label">① 備份連結（所有年份）</span>
           <p className="share-hint">
-            整份規劃（含備註）壓縮成一條連結，存進記事本就是備份，<b>要還原時打開連結即可</b>。是匯出當下的快照——之後有修改，記得重新匯出。
+            所有年份的規劃（含備註）壓縮成一條連結，存進記事本就是備份，<b>要還原時打開連結即可</b>。是匯出當下的快照——之後有修改，記得重新匯出。
           </p>
           <textarea
             ref={urlRef}

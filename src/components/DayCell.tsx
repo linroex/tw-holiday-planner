@@ -59,11 +59,16 @@ export function DayCell({
   // 區段已命名 → 貼紙標籤代表整段，段內各日的假名／請假字樣一律隱藏以免雜亂
   const label = segInfo?.name ? null : cellLabel(status, entry);
 
+  // 貼紙在區段起點＋每週列的第一格＋跨月的第一格重複出現，
+  // 長區段的每一列都看得到名稱（不會像只有第一天去）
+  const showName =
+    !!segInfo?.name && (segInfo.isStart || weekday === weekStart || isMonthStart);
+
   return (
     <button type="button" className={classes.join(' ')} onClick={() => onTap(iso, status)}>
       <span className="day-num">{day}</span>
       {label && <span className="day-label">{label}</span>}
-      {segInfo?.isStart && segInfo.name && <span className="seg-name">{segInfo.name}</span>}
+      {showName && <span className="seg-name">{segInfo.name}</span>}
     </button>
   );
 }

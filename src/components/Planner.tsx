@@ -309,8 +309,8 @@ export function Planner() {
 
       {exportOpen && (
         <ExportSheet
-          plan={activePlan}
-          segments={segments.filter((s) => ownerYearOf(s.start) === activeYear)}
+          plans={YEARS.map((y) => plans[y]!)}
+          segments={segments}
           onClose={() => setExportOpen(false)}
         />
       )}
