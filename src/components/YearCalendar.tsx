@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import type { BreakAnnotation } from '../data/types';
 import { getHolidayMap } from '../data';
 import { annotationsForSegment, type BreakSegment } from '../lib/breaks';
-import { epochDayToISO, isoToEpochDay, type ISODate } from '../lib/date';
+import { epochDayToISO, isoToEpochDay, todayISO, type ISODate } from '../lib/date';
 import type { DayStatus } from '../lib/dayStatus';
 import { MonthGrid } from './MonthGrid';
 
@@ -60,40 +60,37 @@ export function YearCalendar({
     return map;
   }, [segments, annotations]);
 
-  const todayISO = useMemo(() => {
-    const now = new Date();
-    const p = (n: number) => String(n).padStart(2, '0');
-    return `${now.getFullYear()}-${p(now.getMonth() + 1)}-${p(now.getDate())}`;
-  }, []);
+  const today = useMemo(() => todayISO(), []);
 
   const firstYear = years[0]!;
   const lastYear = years[years.length - 1]!;
 
-  // 前後各多渲染一個邊界月份；跨年連假與隔年請假一目了然
-  const months: { y: number; m: number; boundary: boolean }[] = [
+  // 前後各多渲染一個邊界月份；已整月過去的月份不顯示
+  const [ty, tm] = [+today.slice(0, 4), +today.slice(5, 7)];
+  const months = [
     { y: firstYear - 1, m: 12, boundary: true },
     ...years.flatMap((y) =>
       Array.from({ length: 12 }, (_, i) => ({ y, m: i + 1, boundary: false })),
     ),
     { y: lastYear + 1, m: 1, boundary: true },
-  ];
+  ].filter(({ y, m }) => y * 100 + m >= ty * 100 + tm);
 
-  const titleOf = (y: number, m: number, boundary: boolean) =>
-    boundary || m === 1 ? `${y}年${m}月` : `${m}月`;
+  const titleOf = (y: number, m: number, boundary: boolean, isFirst: boolean) =>
+    boundary || m === 1 || isFirst ? `${y}年${m}月` : `${m}月`;
 
   return (
     <div className="year-calendar">
-      {months.map(({ y, m, boundary }) => (
+      {months.map(({ y, m, boundary }, i) => (
         <MonthGrid
           key={`${y}-${m}`}
           year={y}
           month={m}
-          title={titleOf(y, m, boundary)}
+          title={titleOf(y, m, boundary, i === 0)}
           boundary={boundary}
           holidayMap={holidayMap}
           leaveSet={leaveSet}
           segMap={segMap}
-          todayISO={todayISO}
+          todayISO={today}
           selectedSegment={selectedSegment}
           weekStart={weekStart}
           onDayTap={onDayTap}

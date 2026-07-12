@@ -4,6 +4,7 @@ interface Props {
   quota: number;
   breakCount: number;
   sheetOpen: boolean;
+  onQuotaTap: () => void;
   onToggleSheet: () => void;
   onShare: () => void;
 }
@@ -14,6 +15,7 @@ export function QuotaBar({
   quota,
   breakCount,
   sheetOpen,
+  onQuotaTap,
   onToggleSheet,
   onShare,
 }: Props) {
@@ -21,14 +23,19 @@ export function QuotaBar({
   const over = remaining < 0;
   return (
     <div className="quota-bar">
-      <div className={`quota-info${over ? ' quota-over' : ''}`}>
+      <button
+        type="button"
+        className={`quota-info${over ? ' quota-over' : ''}`}
+        aria-label="調整特休天數"
+        onClick={onQuotaTap}
+      >
         <span className="quota-line">
-          特休 <b>{used}</b> / {quota}
+          特休 <b>{used}</b> / {quota} <span className="quota-edit">✎</span>
         </span>
         <span className="quota-sub">
           {year} · {over ? `超額 ${-remaining} 天` : `剩 ${remaining} 天`}
         </span>
-      </div>
+      </button>
       <button type="button" className="btn-secondary" onClick={onToggleSheet}>
         {sheetOpen ? '收合' : `連假 ${breakCount}`}
       </button>

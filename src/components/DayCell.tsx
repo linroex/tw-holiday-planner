@@ -11,6 +11,7 @@ interface Props {
   entry: HolidayEntry | undefined;
   segInfo: SegCellInfo | undefined;
   isToday: boolean;
+  isPast: boolean;
   isSelected: boolean;
   weekStart: 0 | 1;
   onTap: DayTapHandler;
@@ -31,11 +32,13 @@ export function DayCell({
   entry,
   segInfo,
   isToday,
+  isPast,
   isSelected,
   weekStart,
   onTap,
 }: Props) {
   const classes = ['day', `day-${status}`];
+  if (isPast) classes.push('day-past');
   if (segInfo) {
     classes.push('seg');
     // 週界斷行時色帶各自封口

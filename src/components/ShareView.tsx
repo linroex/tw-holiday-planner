@@ -1,16 +1,17 @@
 import { useMemo, useState } from 'react';
 import type { UserPlan } from '../data/types';
 import { detectBreaks, type BreakSegment } from '../lib/breaks';
+import { todayISO } from '../lib/date';
 import { loadPlan, loadSettings, savePlan } from '../lib/storage';
 import { BreakList } from './BreakList';
 import { YearCalendar } from './YearCalendar';
 
 /** 開啟別人的分享連結：唯讀檢視 + 可匯入成自己的規劃 */
 export function ShareView({ plan }: { plan: UserPlan }) {
-  const segments = useMemo(
-    () => detectBreaks(plan.year, plan.leaveDays),
-    [plan.year, plan.leaveDays],
-  );
+  const segments = useMemo(() => {
+    const today = todayISO();
+    return detectBreaks(plan.year, plan.leaveDays).filter((s) => s.end >= today);
+  }, [plan.year, plan.leaveDays]);
   const [selected, setSelected] = useState<BreakSegment | null>(null);
 
   const handleImport = () => {

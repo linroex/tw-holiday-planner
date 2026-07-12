@@ -51,6 +51,13 @@ export function daysInMonth(y: number, m: number): number {
 
 export const WEEKDAY_LABELS = ['日', '一', '二', '三', '四', '五', '六'] as const;
 
+/** 今天的本地日期（唯一允許使用 Date 的地方） */
+export function todayISO(): ISODate {
+  const now = new Date();
+  const p = (n: number) => String(n).padStart(2, '0');
+  return `${now.getFullYear()}-${p(now.getMonth() + 1)}-${p(now.getDate())}`;
+}
+
 /** '2027-04-03' → '4/3（六）' */
 export function formatShort(iso: ISODate): string {
   const n = isoToEpochDay(iso);

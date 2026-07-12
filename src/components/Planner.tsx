@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { detectBreaks, type BreakSegment } from '../lib/breaks';
-import { fromEpochDay, isoToEpochDay, type ISODate } from '../lib/date';
+import { fromEpochDay, isoToEpochDay, todayISO, type ISODate } from '../lib/date';
 import { isMarkable, type DayStatus } from '../lib/dayStatus';
 import {
   clearAllData,
@@ -13,6 +13,7 @@ import { ownerYearOf, usePlans } from '../state/PlanContext';
 import { BreakDetailSheet } from './BreakDetailSheet';
 import { BreakList } from './BreakList';
 import { QuotaBar } from './QuotaBar';
+import { QuotaSheet } from './QuotaSheet';
 import { SettingsSheet } from './SettingsSheet';
 import { ShareSheet } from './ShareSheet';
 import { monthElementId, YearCalendar } from './YearCalendar';
@@ -26,6 +27,7 @@ export function Planner() {
   const [settingsOpen, setSettingsOpen] = useState(firstRun);
   const [onboarded, setOnboarded] = useState(!firstRun);
   const [shareOpen, setShareOpen] = useState(false);
+  const [quotaOpen, setQuotaOpen] = useState(false);
   const [settings, setSettings] = useState<DisplaySettings>(loadSettings);
   const [activeYear, setActiveYear] = useState(() => {
     const last = loadSettings().lastYear;
@@ -48,10 +50,13 @@ export function Planner() {
   );
   const annotations = useMemo(() => YEARS.flatMap((y) => plans[y]!.annotations), [plans]);
 
-  const segments = useMemo(
-    () => detectBreaks(YEARS[0]!, leaveDays, undefined, LAST_YEAR),
-    [leaveDays],
-  );
+  // 已整段結束的連假不顯示（過去的日期不用看）
+  const segments = useMemo(() => {
+    const today = todayISO();
+    return detectBreaks(YEARS[0]!, leaveDays, undefined, LAST_YEAR).filter(
+      (s) => s.end >= today,
+    );
+  }, [leaveDays]);
 
   // 從清單點入的區段，在請假日變動後對回最新的區段物件
   const activeSegment = useMemo(() => {
@@ -118,6 +123,10 @@ export function Planner() {
 
   const handleDayTap = (iso: ISODate, status: DayStatus) => {
     if (isMarkable(status)) {
+      if (iso < todayISO()) {
+        showToast('這天已經過去啦');
+        return;
+      }
       dispatchFor(ownerYearOf(iso), { type: 'toggle-leave', date: iso });
       return;
     }
@@ -198,9 +207,20 @@ export function Planner() {
         quota={activePlan.annualLeaveQuota}
         breakCount={segments.length}
         sheetOpen={listOpen}
+        onQuotaTap={() => setQuotaOpen(true)}
         onToggleSheet={() => setListOpen((v) => !v)}
         onShare={() => setShareOpen(true)}
       />
+
+      {quotaOpen && (
+        <QuotaSheet
+          year={activeYear}
+          quota={activePlan.annualLeaveQuota}
+          used={usedLeave}
+          onSetQuota={(quota) => dispatchFor(activeYear, { type: 'set-quota', quota })}
+          onClose={() => setQuotaOpen(false)}
+        />
+      )}
 
       {shareOpen && (
         <ShareSheet

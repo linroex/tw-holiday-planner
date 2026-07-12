@@ -74,6 +74,7 @@ export function MonthGrid({
               entry={entry?.muted ? undefined : entry}
               segInfo={segInfo}
               isToday={iso === todayISO}
+              isPast={iso < todayISO}
               isSelected={segInfo?.seg === selectedSegment}
               weekStart={weekStart}
               onTap={onDayTap}
