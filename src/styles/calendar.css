@@ -150,6 +150,21 @@
   border-bottom-right-radius: 3px;
 }
 
+/* 連假跨月：月界處色帶漸層淡出／淡入，表示「還沒結束，下個月繼續」 */
+.seg-cont-right::after {
+  right: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  background: linear-gradient(to right, var(--band) 45%, transparent);
+}
+
+.seg-cont-left::after {
+  left: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  background: linear-gradient(to left, var(--band) 45%, transparent);
+}
+
 /* 行程名稱：顯示在區段起始格，像 Google Calendar 事件橫跨數格 */
 .seg-name {
   position: absolute;

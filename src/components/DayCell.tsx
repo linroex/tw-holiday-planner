@@ -10,6 +10,9 @@ interface Props {
   status: DayStatus;
   entry: HolidayEntry | undefined;
   segInfo: SegCellInfo | undefined;
+  /** 該月第一天／最後一天：連假跨月時色帶改為漸層延續而非封口 */
+  isMonthStart: boolean;
+  isMonthEnd: boolean;
   isToday: boolean;
   isPast: boolean;
   isSelected: boolean;
@@ -31,6 +34,8 @@ export function DayCell({
   status,
   entry,
   segInfo,
+  isMonthStart,
+  isMonthEnd,
   isToday,
   isPast,
   isSelected,
@@ -44,6 +49,9 @@ export function DayCell({
     // 週界斷行時色帶各自封口
     if (segInfo.isStart || weekday === weekStart) classes.push('seg-start');
     if (segInfo.isEnd || weekday === (weekStart + 6) % 7) classes.push('seg-end');
+    // 跨月延續：月界處不封口，改為漸層淡出／淡入
+    if (isMonthEnd && !segInfo.isEnd) classes.push('seg-cont-right');
+    if (isMonthStart && !segInfo.isStart) classes.push('seg-cont-left');
   }
   if (isToday) classes.push('day-today');
   if (isSelected) classes.push('seg-selected');

@@ -73,6 +73,8 @@ export function MonthGrid({
               status={status}
               entry={entry?.muted ? undefined : entry}
               segInfo={segInfo}
+              isMonthStart={i === 0}
+              isMonthEnd={i === numDays - 1}
               isToday={iso === todayISO}
               isPast={iso < todayISO}
               isSelected={segInfo?.seg === selectedSegment}
