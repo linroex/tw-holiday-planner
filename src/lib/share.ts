@@ -5,6 +5,7 @@ import { epochDayToISO, isoToEpochDay, toEpochDay } from './date';
 /**
  * 分享連結：plan 精簡化（日期轉「距 1/1 天數」整數、欄位縮寫）
  * → JSON → lz-string base64url → 放在 hash fragment（不上伺服器、不干擾快取）。
+ * 備註不進分享連結：常含預算等私人資訊，只分享連假名稱。
  */
 
 const HASH_PREFIX = '#share=';
@@ -14,7 +15,8 @@ interface SharePayloadV1 {
   y: number;
   q: number;
   l: number[];
-  a: [number, string, string][];
+  /** [錨定日 offset, 連假名稱]；舊版連結可能是三元組（含備註），解碼時相容 */
+  a: [number, string, string?][];
 }
 
 export function encodePlanToHash(plan: UserPlan): string {
@@ -24,7 +26,9 @@ export function encodePlanToHash(plan: UserPlan): string {
     y: plan.year,
     q: plan.annualLeaveQuota,
     l: plan.leaveDays.map((d) => isoToEpochDay(d) - jan1),
-    a: plan.annotations.map((a) => [isoToEpochDay(a.anchorDate) - jan1, a.name, a.note]),
+    a: plan.annotations
+      .filter((a) => a.name.trim()) // 只有備註沒有名稱的不用分享
+      .map((a) => [isoToEpochDay(a.anchorDate) - jan1, a.name]),
   };
   return HASH_PREFIX + LZString.compressToEncodedURIComponent(JSON.stringify(payload));
 }
@@ -51,11 +55,14 @@ export function decodeShareHash(hash: string): UserPlan | null {
         .sort(),
       annotations: a
         .filter(
-          (t): t is [number, string, string] =>
-            Array.isArray(t) && typeof t[0] === 'number' &&
-            typeof t[1] === 'string' && typeof t[2] === 'string',
+          (t): t is [number, string, string?] =>
+            Array.isArray(t) && typeof t[0] === 'number' && typeof t[1] === 'string',
         )
-        .map(([n, name, note]) => ({ anchorDate: epochDayToISO(jan1 + n), name, note })),
+        .map(([n, name, note]) => ({
+          anchorDate: epochDayToISO(jan1 + n),
+          name,
+          note: typeof note === 'string' ? note : '',
+        })),
     };
   } catch {
     return null;

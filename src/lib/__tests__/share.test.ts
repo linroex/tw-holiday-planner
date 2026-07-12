@@ -14,20 +14,40 @@ const samplePlan: UserPlan = {
 };
 
 describe('分享連結編解碼', () => {
-  it('roundtrip 深度相等', () => {
+  it('roundtrip：請假日與連假名稱保留，備註不進分享連結', () => {
     const hash = encodePlanToHash(samplePlan);
     expect(hash.startsWith('#share=')).toBe(true);
-    expect(decodeShareHash(hash)).toEqual(samplePlan);
+    const decoded = decodeShareHash(hash)!;
+    expect(decoded.year).toBe(2027);
+    expect(decoded.annualLeaveQuota).toBe(10);
+    expect(decoded.leaveDays).toEqual(samplePlan.leaveDays);
+    expect(decoded.annotations).toEqual([
+      { anchorDate: '2027-04-04', name: '澳洲', note: '' }, // 備註被剝除
+      { anchorDate: '2027-02-04', name: '機車旅行', note: '' },
+    ]);
+    expect(hash).not.toContain('布里斯本');
   });
 
-  it('中文長備註 roundtrip', () => {
+  it('只有備註沒有名稱的 annotation 不進分享連結', () => {
     const plan: UserPlan = {
       ...samplePlan,
-      annotations: [
-        { anchorDate: '2027-12-25', name: '徒步環島', note: '第一天台北出發'.repeat(30) },
-      ],
+      annotations: [{ anchorDate: '2027-06-09', name: '', note: '私人備忘' }],
     };
-    expect(decodeShareHash(encodePlanToHash(plan))).toEqual(plan);
+    expect(decodeShareHash(encodePlanToHash(plan))!.annotations).toEqual([]);
+  });
+
+  it('舊版三元組（含備註）連結仍可解碼', async () => {
+    // 手工模擬舊版 payload 格式
+    const LZString = (await import('lz-string')).default;
+    const legacy =
+      '#share=' +
+      LZString.compressToEncodedURIComponent(
+        JSON.stringify({ v: 1, y: 2027, q: 7, l: [], a: [[93, '澳洲', '舊備註']] }),
+      );
+    const decoded = decodeShareHash(legacy)!;
+    expect(decoded.annotations).toEqual([
+      { anchorDate: '2027-04-04', name: '澳洲', note: '舊備註' },
+    ]);
   });
 
   it('空 plan roundtrip', () => {
@@ -46,7 +66,6 @@ describe('分享連結編解碼', () => {
     expect(decodeShareHash('#share=')).toBeNull();
     expect(decodeShareHash('#other=abc')).toBeNull();
     expect(decodeShareHash('')).toBeNull();
-    // 截斷的合法編碼
     const truncated = encodePlanToHash(samplePlan).slice(0, 20);
     expect(decodeShareHash(truncated)).toBeNull();
   });

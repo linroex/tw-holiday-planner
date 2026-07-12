@@ -60,7 +60,9 @@ export function ShareSheet({ url, plan, segments, onClose }: Props) {
         <div className="sheet-header">
           <div>
             <h3 className="sheet-title">分享我的規劃</h3>
-            <p className="sheet-subtitle">朋友打開連結會看到唯讀版，可一鍵匯入成自己的</p>
+            <p className="sheet-subtitle">
+              朋友會看到唯讀版（含連假名稱，不含你的備註），可一鍵匯入
+            </p>
           </div>
           <button type="button" className="btn-text" onClick={onClose}>
             關閉
