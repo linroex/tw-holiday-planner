@@ -21,15 +21,15 @@ import { SettingsSheet } from './SettingsSheet';
 import { ExportSheet } from './ExportSheet';
 import { ShareSheet } from './ShareSheet';
 import { WelcomeSheet } from './WelcomeSheet';
-import { monthElementId, YearCalendar } from './YearCalendar';
+import { monthElementId, WeekStream } from './WeekStream';
 
 const YEARS = SUPPORTED_YEARS;
 const LAST_YEAR = YEARS[YEARS.length - 1]!;
 
 const TOUR_STEPS: TourStep[] = [
   {
-    // 鎖定最新年份 1 月的上班日，避免導覽把畫面捲到年曆最前面
-    selector: `#month-${LAST_YEAR}-1 .day-workday`,
+    // 週流從當月開始，第一個未過去的上班日就在使用者眼前
+    selector: '.day-workday:not(.day-past)',
     title: '點上班日標記請假',
     text: '點一下變成琥珀色「請假」，再點一次取消。跟週末、國定假日連起來的休假，會用黃色色帶顯示成一段連假。',
   },
@@ -142,7 +142,7 @@ export function Planner() {
       raf = requestAnimationFrame(() => {
         const containerTop = el.getBoundingClientRect().top;
         let current: Element | null = null;
-        for (const m of el.querySelectorAll('.month')) {
+        for (const m of el.querySelectorAll('[id^="month-"]')) {
           if (m.getBoundingClientRect().top - containerTop <= 80) current = m;
           else break;
         }
@@ -255,7 +255,7 @@ export function Planner() {
 
       <main className="calendar-scroll" ref={scrollRef}>
         <p className="usage-hint">點上班日標記請假，自動幫你算連假長度</p>
-        <YearCalendar
+        <WeekStream
           years={YEARS}
           leaveDays={leaveDays}
           annotations={annotations}

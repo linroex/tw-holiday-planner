@@ -1,7 +1,7 @@
 import type { HolidayEntry } from '../data/types';
 import type { ISODate } from '../lib/date';
 import type { DayStatus } from '../lib/dayStatus';
-import type { DayTapHandler, SegCellInfo } from './YearCalendar';
+import type { DayTapHandler, SegCellInfo } from './WeekStream';
 
 interface Props {
   iso: ISODate;
@@ -64,7 +64,12 @@ export function DayCell({
   if (showName) classes.push('day-hosts-name');
 
   return (
-    <button type="button" className={classes.join(' ')} onClick={() => onTap(iso, status)}>
+    <button
+      type="button"
+      className={classes.join(' ')}
+      data-date={iso}
+      onClick={() => onTap(iso, status)}
+    >
       <span className="day-num">{day}</span>
       {label && <span className="day-label">{label}</span>}
       {showName && (
