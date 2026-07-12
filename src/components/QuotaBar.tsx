@@ -6,6 +6,7 @@ interface Props {
   sheetOpen: boolean;
   onQuotaTap: () => void;
   onToggleSheet: () => void;
+  onExport: () => void;
   onShare: () => void;
 }
 
@@ -17,6 +18,7 @@ export function QuotaBar({
   sheetOpen,
   onQuotaTap,
   onToggleSheet,
+  onExport,
   onShare,
 }: Props) {
   const remaining = quota - used;
@@ -39,8 +41,11 @@ export function QuotaBar({
       <button type="button" className="btn-secondary" onClick={onToggleSheet}>
         {sheetOpen ? '收合' : `連假 ${breakCount}`}
       </button>
-      <button type="button" className="btn-primary" onClick={onShare}>
-        分享・匯出
+      <button type="button" className="btn-primary btn-export" onClick={onExport}>
+        匯出
+      </button>
+      <button type="button" className="btn-secondary btn-share" onClick={onShare}>
+        分享
       </button>
     </div>
   );

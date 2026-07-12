@@ -19,6 +19,7 @@ import { BreakList } from './BreakList';
 import { QuotaBar } from './QuotaBar';
 import { QuotaSheet } from './QuotaSheet';
 import { SettingsSheet } from './SettingsSheet';
+import { ExportSheet } from './ExportSheet';
 import { ShareSheet } from './ShareSheet';
 import { WelcomeSheet } from './WelcomeSheet';
 import { monthElementId, YearCalendar } from './YearCalendar';
@@ -44,9 +45,9 @@ const TOUR_STEPS: TourStep[] = [
     text: '全年所有連假的清單。點任何一段可以幫它取名（例如「帛琉潛水」）、記下機票住宿備註。',
   },
   {
-    selector: '.quota-bar .btn-primary',
-    title: '分享與匯出',
-    text: '推薦工具給朋友、分享你的行程（不含備註），或把規劃匯出到 Google／Apple 日曆。',
+    selector: '.quota-bar .btn-export',
+    title: '匯出與分享',
+    text: '「匯出」給自己：備份連結、還原、下載進 Google／Apple 日曆；旁邊的「分享」給別人：推薦工具、把行程傳給朋友（不含備註）。',
   },
   {
     selector: '.year-select',
@@ -67,6 +68,7 @@ export function Planner() {
   const [welcomeOpen, setWelcomeOpen] = useState(firstRun);
   const firstMarkHinted = useRef(false);
   const [shareOpen, setShareOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
   const [quotaOpen, setQuotaOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [tourActive, setTourActive] = useState(false);
@@ -283,7 +285,7 @@ export function Planner() {
             <button
               type="button"
               className="btn-secondary"
-              onClick={() => setShareOpen(true)}
+              onClick={() => setExportOpen(true)}
             >
               去備份
             </button>
@@ -323,6 +325,7 @@ export function Planner() {
         sheetOpen={listOpen}
         onQuotaTap={() => setQuotaOpen(true)}
         onToggleSheet={() => setListOpen((v) => !v)}
+        onExport={() => setExportOpen(true)}
         onShare={() => setShareOpen(true)}
       />
 
@@ -336,13 +339,15 @@ export function Planner() {
         />
       )}
 
-      {shareOpen && (
-        <ShareSheet
+      {exportOpen && (
+        <ExportSheet
           plan={activePlan}
           segments={segments.filter((s) => ownerYearOf(s.start) === activeYear)}
-          onClose={() => setShareOpen(false)}
+          onClose={() => setExportOpen(false)}
         />
       )}
+
+      {shareOpen && <ShareSheet plan={activePlan} onClose={() => setShareOpen(false)} />}
 
       {activeSegment && (
         <BreakDetailSheet

@@ -94,7 +94,7 @@ export function savePlan(plan: UserPlan): void {
  * 注意：擋不住 Safari ITP 的七天刪除——Apple 只接受「加入主畫面」這種使用者
  * 主動手勢作為豁免，不接受腳本自行申請（否則追蹤器都會呼叫它），
  * 見 https://bugs.webkit.org/show_bug.cgi?id=209563 。
- * iOS Safari 的防護是備份提示卡＋引導加入主畫面；手動清除則只能靠備份連結。
+ * iOS Safari 的防護是備份提示卡（提醒匯出備份連結）；手動清除也只能靠備份連結還原。
  */
 export async function requestPersistentStorage(): Promise<void> {
   try {
