@@ -165,9 +165,15 @@
   border-bottom-right-radius: 5px 3px;
 }
 
-/* 鄰月補位格：淡化但仍可操作，跨月連假因此能在同一列完整呈現 */
-.day-outside {
-  opacity: 0.45;
+/* 月份在列中間交接：1 號左側一條虛線分隔（鄰月補位格不再淡化） */
+.day-month-edge::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: -3px; /* 落在 4px column gap 的中間 */
+  border-left: 2px dashed var(--c-border);
+  pointer-events: none;
 }
 
 /* 掛事件條的格子提升層級：事件條才不會被同列較後的請假格（有 transform）蓋住 */

@@ -10,7 +10,7 @@ interface Props {
   status: DayStatus;
   entry: HolidayEntry | undefined;
   segInfo: SegCellInfo | undefined;
-  /** 鄰月補位格（淡化顯示，仍可操作） */
+  /** 鄰月補位格（照常顯示，月界以 day-month-edge 虛線分隔） */
   outside: boolean;
   /** 區段在本列自此格起延續的格數（貼紙在該列置中用） */
   rowSpan: number;
@@ -45,6 +45,8 @@ export function DayCell({
 }: Props) {
   const classes = ['day', `day-${status}`];
   if (outside) classes.push('day-outside');
+  // 月份在列中間交接時，1 號左側畫虛線分隔（取代淡化上月尾）
+  if (day === 1 && weekday !== weekStart) classes.push('day-month-edge');
   if (isPast) classes.push('day-past');
   if (segInfo) {
     classes.push('seg');
