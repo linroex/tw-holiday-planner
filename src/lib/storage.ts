@@ -81,3 +81,17 @@ export function savePlan(plan: UserPlan): void {
     // 私密模式或空間不足時靜默失敗，App 仍可離線操作
   }
 }
+
+/** 完整重置：清掉所有年份的規劃與顯示偏好，回到全新狀態 */
+export function clearAllData(): void {
+  try {
+    const keys: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key?.startsWith('thp.')) keys.push(key);
+    }
+    for (const key of keys) localStorage.removeItem(key);
+  } catch {
+    // 靜默失敗
+  }
+}

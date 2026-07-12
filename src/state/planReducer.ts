@@ -1,12 +1,10 @@
 import type { BreakAnnotation, UserPlan } from '../data/types';
-import { defaultPlan } from '../lib/storage';
 
 export type PlanAction =
   | { type: 'toggle-leave'; date: string }
   | { type: 'set-quota'; quota: number }
   | { type: 'save-annotation'; annotation: BreakAnnotation }
-  | { type: 'import-plan'; plan: UserPlan }
-  | { type: 'reset' };
+  | { type: 'import-plan'; plan: UserPlan };
 
 export function planReducer(plan: UserPlan, action: PlanAction): UserPlan {
   switch (action.type) {
@@ -30,7 +28,5 @@ export function planReducer(plan: UserPlan, action: PlanAction): UserPlan {
     }
     case 'import-plan':
       return action.plan;
-    case 'reset':
-      return defaultPlan(plan.year);
   }
 }

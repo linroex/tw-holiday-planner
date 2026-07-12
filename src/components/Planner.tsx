@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { detectBreaks, type BreakSegment } from '../lib/breaks';
 import { isoToEpochDay, fromEpochDay, type ISODate } from '../lib/date';
 import { isMarkable, type DayStatus } from '../lib/dayStatus';
-import { loadSettings, saveSettings, type DisplaySettings } from '../lib/storage';
+import { clearAllData, loadSettings, saveSettings, type DisplaySettings } from '../lib/storage';
 import { getHolidayMap } from '../data';
 import { usePlan } from '../state/PlanContext';
 import { BreakDetailSheet } from './BreakDetailSheet';
@@ -158,7 +158,11 @@ export function Planner({ onChangeYear }: { onChangeYear: (year: number) => void
           weekStart={settings.weekStart}
           onSetWeekStart={(weekStart) => updateSettings({ ...settings, weekStart })}
           onSetQuota={(quota) => dispatch({ type: 'set-quota', quota })}
-          onReset={() => dispatch({ type: 'reset' })}
+          onReset={() => {
+            // 完整重置：所有年份的規劃＋顯示偏好一併清除，重載後回到首次使用引導
+            clearAllData();
+            location.reload();
+          }}
           onClose={() => {
             setSettingsOpen(false);
             setOnboarded(true);
