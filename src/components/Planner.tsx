@@ -8,7 +8,6 @@ import {
   saveSettings,
   type DisplaySettings,
 } from '../lib/storage';
-import { isSafariITP, isStandalone } from '../lib/platform';
 import { getHolidayMap, SUPPORTED_YEARS } from '../data';
 import { ownerYearOf, usePlans } from '../state/PlanContext';
 import { AppFooter } from './AppFooter';
@@ -211,13 +210,6 @@ export function Planner() {
     d.startsWith(`${activeYear}-`),
   ).length;
 
-  // Safari 系（iOS 全瀏覽器＋macOS Safari）＋已有相當規劃內容 → 提醒備份（7 天清除規則）
-  const showBackupHint =
-    isSafariITP() &&
-    !isStandalone() &&
-    !settings.backupHintDismissed &&
-    (leaveDays.length >= 5 || annotations.length >= 1);
-
   return (
     <div className="app">
       <header className="header">
@@ -275,30 +267,6 @@ export function Planner() {
         </div>
         <AppFooter />
       </main>
-
-      {showBackupHint && (
-        <div className="backup-hint">
-          <p>
-            💾 太久沒打開的話，Safari 可能會清掉你的規劃——完成規劃後，記得<b>匯出備份一份</b>。
-          </p>
-          <div className="backup-hint-actions">
-            <button
-              type="button"
-              className="btn-secondary"
-              onClick={() => setExportOpen(true)}
-            >
-              去備份
-            </button>
-            <button
-              type="button"
-              className="btn-text"
-              onClick={() => updateSettings({ ...settings, backupHintDismissed: true })}
-            >
-              知道了
-            </button>
-          </div>
-        </div>
-      )}
 
       {listOpen && (
         <div

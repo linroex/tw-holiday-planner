@@ -20,10 +20,3 @@ export function isSafariITP(): boolean {
   );
 }
 
-/** 已加入主畫面（standalone 模式）→ 不受 Safari 7 天儲存清除規則影響 */
-export function isStandalone(): boolean {
-  return (
-    window.matchMedia('(display-mode: standalone)').matches ||
-    (navigator as { standalone?: boolean }).standalone === true
-  );
-}

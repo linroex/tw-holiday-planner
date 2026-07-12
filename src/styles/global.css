@@ -693,33 +693,6 @@ textarea {
   line-height: 42px;
 }
 
-/* ── iOS 備份提示（固定在底部特休列上方，出現時必在視野內） ── */
-.backup-hint {
-  flex-shrink: 0;
-  margin: 6px 12px 8px;
-  padding: 12px 14px;
-  border: 1.5px dashed #c9b98f;
-  border-radius: var(--wobble-lg);
-  background: var(--c-surface);
-  font-size: 13px;
-  box-shadow: 0 -4px 14px rgba(69, 59, 46, 0.08);
-}
-
-.backup-hint p {
-  margin-bottom: 8px;
-}
-
-.backup-hint-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.backup-hint-actions .btn-secondary {
-  min-height: 38px;
-  font-size: 14px;
-}
-
 /* ── 2028 預告卡片（月曆底部） ── */
 .future-note {
   margin: 8px 12px 24px;
