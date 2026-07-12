@@ -92,14 +92,14 @@ export function ShareSheet({ plan, segments, onClose }: Props) {
         </div>
 
         <div className="share-section">
-          <span className="field-label">② 分享我的行程</span>
+          <span className="field-label">② 分享行程・備份</span>
           <label className="toggle-row">
             <input
               type="checkbox"
               checked={includeNotes}
               onChange={(e) => setIncludeNotes(e.target.checked)}
             />
-            包含備註（轉移到其他裝置或自行備份時再開）
+            包含備註（備份或換裝置用）
           </label>
           <textarea
             ref={planUrlRef}
@@ -129,8 +129,8 @@ export function ShareSheet({ plan, segments, onClose }: Props) {
           </div>
           <p className="share-hint">
             {includeNotes
-              ? '⚠️ 這個連結包含你的備註，只傳給自己：存進記事本就是完整備份，資料被清除也能還原'
-              : '朋友打開是唯讀檢視（看得到行程名稱，看不到備註），可一鍵匯入'}
+              ? '⚠️ 連結含備註，只傳給自己——存進記事本就是完整備份'
+              : '朋友打開是唯讀、看不到備註，可一鍵匯入'}
           </p>
         </div>
 

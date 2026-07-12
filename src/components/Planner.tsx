@@ -301,8 +301,7 @@ export function Planner() {
         <div className="future-note">
           <b>2028 年的假期呢？</b>
           <p>
-            政府預計 <b>2027 年年中</b>公告，屆時自動更新 😉 想先規劃跨年？上面 1
-            月的格子<b>現在就能標記</b>（不佔 2027 預算）。
+            政府預計 <b>2027 年年中</b>公告，屆時自動更新 😉
           </p>
         </div>
         <AppFooter />

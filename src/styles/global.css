@@ -73,7 +73,8 @@ button {
   cursor: pointer;
 }
 
-/* 手寫體只給展示元素：月曆、標題、按鈕、徽章——內文維持黑體易讀 */
+/* 手寫體給展示元素與短資訊；黑體只留給長句內文。
+   原則：同一個緊湊元件內不混字體 */
 .header-title,
 .year-select,
 .month-title,
@@ -86,9 +87,16 @@ button {
 .btn-secondary,
 .btn-text,
 .stepper-value,
+.segmented button,
 .quota-line,
+.quota-sub,
 .badge,
 .break-name,
+.break-range,
+.break-year-header,
+.break-panel-count,
+.readonly-badge,
+.legend-chip,
 .future-note b,
 .help-steps b,
 .toast,
