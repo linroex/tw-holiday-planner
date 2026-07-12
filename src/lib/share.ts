@@ -18,9 +18,21 @@ interface SharePayloadV1 {
   l: number[];
   /** [錨定日 offset, 連假名稱, 備註?]；備註只在 includeNotes 時存在 */
   a: [number, string, string?][];
+  /** 1 = 備份連結（自己匯出的），未帶 = 朋友分享 */
+  b?: 1;
 }
 
-export function encodePlanToHash(plan: UserPlan, includeNotes = false): string {
+export interface DecodedShare {
+  plan: UserPlan;
+  /** 這條連結是「匯出備份」還是「分享給朋友」——開啟時分流顯示 */
+  isBackup: boolean;
+}
+
+export function encodePlanToHash(
+  plan: UserPlan,
+  includeNotes = false,
+  kind: 'share' | 'backup' = 'share',
+): string {
   const jan1 = toEpochDay(plan.year, 1, 1);
   const payload: SharePayloadV1 = {
     v: 1,
@@ -34,40 +46,44 @@ export function encodePlanToHash(plan: UserPlan, includeNotes = false): string {
           ? [isoToEpochDay(a.anchorDate) - jan1, a.name, a.note]
           : [isoToEpochDay(a.anchorDate) - jan1, a.name],
       ),
+    ...(kind === 'backup' ? { b: 1 as const } : {}),
   };
   return HASH_PREFIX + LZString.compressToEncodedURIComponent(JSON.stringify(payload));
 }
 
 /** 解析 #share= hash；格式不符或資料損毀時回傳 null，不 throw */
-export function decodeShareHash(hash: string): UserPlan | null {
+export function decodeShareHash(hash: string): DecodedShare | null {
   if (!hash.startsWith(HASH_PREFIX)) return null;
   try {
     const json = LZString.decompressFromEncodedURIComponent(hash.slice(HASH_PREFIX.length));
     if (!json) return null;
     const p: unknown = JSON.parse(json);
     if (typeof p !== 'object' || p === null) return null;
-    const { v, y, q, l, a } = p as Partial<SharePayloadV1>;
+    const { v, y, q, l, a, b } = p as Partial<SharePayloadV1>;
     if (v !== 1 || typeof y !== 'number' || typeof q !== 'number') return null;
     if (!Array.isArray(l) || !Array.isArray(a)) return null;
     const jan1 = toEpochDay(y, 1, 1);
     return {
-      version: 1,
-      year: y,
-      annualLeaveQuota: q,
-      leaveDays: l
-        .filter((n): n is number => typeof n === 'number')
-        .map((n) => epochDayToISO(jan1 + n))
-        .sort(),
-      annotations: a
-        .filter(
-          (t): t is [number, string, string?] =>
-            Array.isArray(t) && typeof t[0] === 'number' && typeof t[1] === 'string',
-        )
-        .map(([n, name, note]) => ({
-          anchorDate: epochDayToISO(jan1 + n),
-          name,
-          note: typeof note === 'string' ? note : '',
-        })),
+      isBackup: b === 1,
+      plan: {
+        version: 1,
+        year: y,
+        annualLeaveQuota: q,
+        leaveDays: l
+          .filter((n): n is number => typeof n === 'number')
+          .map((n) => epochDayToISO(jan1 + n))
+          .sort(),
+        annotations: a
+          .filter(
+            (t): t is [number, string, string?] =>
+              Array.isArray(t) && typeof t[0] === 'number' && typeof t[1] === 'string',
+          )
+          .map(([n, name, note]) => ({
+            anchorDate: epochDayToISO(jan1 + n),
+            name,
+            note: typeof note === 'string' ? note : '',
+          })),
+      },
     };
   } catch {
     return null;

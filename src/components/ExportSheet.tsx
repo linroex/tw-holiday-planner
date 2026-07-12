@@ -19,7 +19,7 @@ export function ExportSheet({ plan, segments, onClose }: Props) {
   const urlRef = useRef<HTMLTextAreaElement>(null);
   const [copied, setCopied] = useState(false);
 
-  const exportUrl = `${location.origin}${location.pathname}?utm_source=share&utm_medium=app&utm_campaign=export_link${encodePlanToHash(plan, true)}`;
+  const exportUrl = `${location.origin}${location.pathname}?utm_source=share&utm_medium=app&utm_campaign=export_link${encodePlanToHash(plan, true, 'backup')}`;
 
   const copy = async () => {
     try {

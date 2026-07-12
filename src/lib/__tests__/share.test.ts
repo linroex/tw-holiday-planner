@@ -17,7 +17,8 @@ describe('分享連結編解碼', () => {
   it('roundtrip：請假日與連假名稱保留，備註不進分享連結', () => {
     const hash = encodePlanToHash(samplePlan);
     expect(hash.startsWith('#share=')).toBe(true);
-    const decoded = decodeShareHash(hash)!;
+    const { plan: decoded, isBackup } = decodeShareHash(hash)!;
+    expect(isBackup).toBe(false);
     expect(decoded.year).toBe(2027);
     expect(decoded.annualLeaveQuota).toBe(10);
     expect(decoded.leaveDays).toEqual(samplePlan.leaveDays);
@@ -30,7 +31,15 @@ describe('分享連結編解碼', () => {
 
   it('includeNotes=true 時備註完整保留（轉移到其他裝置用）', () => {
     const decoded = decodeShareHash(encodePlanToHash(samplePlan, true))!;
-    expect(decoded.annotations).toEqual(samplePlan.annotations);
+    expect(decoded.plan.annotations).toEqual(samplePlan.annotations);
+  });
+
+  it('備份連結帶 isBackup 標記；分享與舊版連結為 false', () => {
+    const backup = decodeShareHash(encodePlanToHash(samplePlan, true, 'backup'))!;
+    expect(backup.isBackup).toBe(true);
+    expect(backup.plan.annotations).toEqual(samplePlan.annotations);
+    const share = decodeShareHash(encodePlanToHash(samplePlan, false, 'share'))!;
+    expect(share.isBackup).toBe(false);
   });
 
   it('只有備註沒有名稱的 annotation 不進分享連結', () => {
@@ -38,7 +47,7 @@ describe('分享連結編解碼', () => {
       ...samplePlan,
       annotations: [{ anchorDate: '2027-06-09', name: '', note: '私人備忘' }],
     };
-    expect(decodeShareHash(encodePlanToHash(plan))!.annotations).toEqual([]);
+    expect(decodeShareHash(encodePlanToHash(plan))!.plan.annotations).toEqual([]);
   });
 
   it('舊版三元組（含備註）連結仍可解碼', async () => {
@@ -50,7 +59,8 @@ describe('分享連結編解碼', () => {
         JSON.stringify({ v: 1, y: 2027, q: 7, l: [], a: [[93, '澳洲', '舊備註']] }),
       );
     const decoded = decodeShareHash(legacy)!;
-    expect(decoded.annotations).toEqual([
+    expect(decoded.isBackup).toBe(false);
+    expect(decoded.plan.annotations).toEqual([
       { anchorDate: '2027-04-04', name: '澳洲', note: '舊備註' },
     ]);
   });
@@ -63,7 +73,7 @@ describe('分享連結編解碼', () => {
       leaveDays: [],
       annotations: [],
     };
-    expect(decodeShareHash(encodePlanToHash(plan))).toEqual(plan);
+    expect(decodeShareHash(encodePlanToHash(plan))!.plan).toEqual(plan);
   });
 
   it('壞字串回傳 null 不 throw', () => {

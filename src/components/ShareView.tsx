@@ -6,8 +6,14 @@ import { loadPlan, loadSettings, savePlan } from '../lib/storage';
 import { BreakList } from './BreakList';
 import { YearCalendar } from './YearCalendar';
 
-/** 開啟別人的分享連結：唯讀檢視 + 可匯入成自己的規劃 */
-export function ShareView({ plan }: { plan: UserPlan }) {
+interface Props {
+  plan: UserPlan;
+  /** true = 自己匯出的備份連結；false = 朋友分享的行程 */
+  isBackup: boolean;
+}
+
+/** 開啟分享／備份連結：唯讀檢視（先預覽內容）＋ 匯入或還原 */
+export function ShareView({ plan, isBackup }: Props) {
   const segments = useMemo(() => {
     const today = todayISO();
     return detectBreaks(plan.year, plan.leaveDays).filter((s) => s.end >= today);
@@ -16,12 +22,14 @@ export function ShareView({ plan }: { plan: UserPlan }) {
 
   const handleImport = () => {
     const existing = loadPlan(plan.year);
-    if (
-      existing &&
-      (existing.leaveDays.length > 0 || existing.annotations.length > 0) &&
-      !confirm(`你本機已有 ${plan.year} 年的規劃，匯入會覆蓋它。確定要覆蓋嗎？`)
-    ) {
-      return;
+    if (existing && (existing.leaveDays.length > 0 || existing.annotations.length > 0)) {
+      const ok = confirm(
+        `這裡目前已有 ${plan.year} 年的規劃：請假 ${existing.leaveDays.length} 天、` +
+          `備註 ${existing.annotations.length} 則。\n\n` +
+          `${isBackup ? '還原' : '匯入'}後將被覆蓋為：請假 ${plan.leaveDays.length} 天、` +
+          `備註 ${plan.annotations.length} 則。\n\n確定要覆蓋嗎？`,
+      );
+      if (!ok) return;
     }
     savePlan(plan);
     location.replace(location.pathname); // 清除 hash 並以一般模式重新載入
@@ -30,12 +38,16 @@ export function ShareView({ plan }: { plan: UserPlan }) {
   return (
     <div className="app share-view">
       <header className="header">
-        <h1 className="header-title">{plan.year} 連假規劃</h1>
-        <span className="readonly-badge">唯讀</span>
+        <h1 className="header-title">
+          {plan.year} {isBackup ? '備份' : '連假規劃'}
+        </h1>
+        <span className="readonly-badge">{isBackup ? '備份' : '唯讀'}</span>
       </header>
       <main className="calendar-scroll">
         <p className="usage-hint">
-          這是朋友分享的規劃（請假 {plan.leaveDays.length} / {plan.annualLeaveQuota} 天）
+          {isBackup
+            ? '這是匯出的備份（含備註）。確認內容沒問題後，按下方還原。'
+            : `這是朋友分享的規劃（請假 ${plan.leaveDays.length} / ${plan.annualLeaveQuota} 天）`}
         </p>
         <YearCalendar
           years={[plan.year]}
@@ -60,10 +72,10 @@ export function ShareView({ plan }: { plan: UserPlan }) {
           <span className="quota-line">
             請假 <b>{plan.leaveDays.length}</b> / {plan.annualLeaveQuota}
           </span>
-          <span className="quota-sub">朋友的規劃</span>
+          <span className="quota-sub">{isBackup ? '你的備份' : '朋友的規劃'}</span>
         </div>
         <button type="button" className="btn-primary" onClick={handleImport}>
-          匯入到我的規劃
+          {isBackup ? '還原這份備份' : '匯入到我的規劃'}
         </button>
       </div>
     </div>
