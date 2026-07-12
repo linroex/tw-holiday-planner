@@ -21,8 +21,8 @@ export interface BreakSegment {
  * 偵測 year（至 endYear，含）年間的連續休假區段。
  * 以 epoch day 從前一年 12/1 線性掃到次年 1/31，跨月、跨年邊界對演算法透明；
  * registry 查無的年份只靠週末判斷（例如 2028/1/1、1/2 恰為週末，跨年段仍正確）。
- * 收錄條件：與年份區間有交集，且（長度 ≥ 3、含請假日、或含國定假日）——
- * 純兩日週末不列入，但端午、中秋這種週間單日假會以單日項目列出，方便規劃請假。
+ * 收錄條件：段落結束不早於年份區間開始，且（長度 ≥ 3、含請假日、或含國定假日）——
+ * 純兩日週末不列入；完全落在次年 1 月的請假段也會成立（年底提早規劃跨年用）。
  */
 export function detectBreaks(
   year: number,
@@ -34,7 +34,6 @@ export function detectBreaks(
   const scanStart = toEpochDay(year - 1, 12, 1);
   const scanEnd = toEpochDay(endYear + 1, 1, 31);
   const yearStart = toEpochDay(year, 1, 1);
-  const yearEnd = toEpochDay(endYear, 12, 31);
 
   const segments: BreakSegment[] = [];
   let runStart: number | null = null;
@@ -49,7 +48,9 @@ export function detectBreaks(
     if (runStart === null) continue;
 
     const runEnd = d - 1;
-    if (runEnd >= yearStart && runStart <= yearEnd) {
+    // 只排除「整段在年份區間開始前」的段（頭端補墊月的假期）；
+    // 尾端延伸到次年 1/31 的段要保留——年底會提早規劃隔年初的跨年假
+    if (runEnd >= yearStart) {
       const seg = buildSegment(runStart, runEnd, holidayMap, leaveSet);
       if (seg.totalDays >= 3 || seg.leaveDays.length > 0 || seg.holidayNames.length > 0) {
         segments.push(seg);

@@ -136,6 +136,25 @@ describe('detectBreaks — 請假橋接', () => {
     expect(seg.defaultName).toBe('請假連休');
   });
 
+  it('完全落在次年 1 月的請假段也成立（年底提早規劃跨年）', () => {
+    // 2028-01-06（四）、01-07（五）請假 → 1/6–1/9（四五六日）四天
+    const segs = detectBreaks(2027, ['2028-01-06', '2028-01-07']);
+    const seg = findSeg(segs, '2028-01-06')!;
+    expect(seg).toBeDefined();
+    expect(seg.end).toBe('2028-01-09');
+    expect(seg.totalDays).toBe(4);
+    expect(seg.defaultName).toBe('請假連休');
+    // 短到只有兩天也要顯示，讓使用者看見自己的標記
+    const short = detectBreaks(2027, ['2028-01-04', '2028-01-05']);
+    expect(findSeg(short, '2028-01-04')!.totalDays).toBe(2);
+  });
+
+  it('頭端補墊月（前一年 12 月）的假期不收錄', () => {
+    // detectBreaks(2027) 的掃描窗含 2026-12，但 2026-12-25 行憲連假不屬於 2027
+    const segs = detectBreaks(2027, []);
+    expect(findSeg(segs, '2026-12-25')).toBeUndefined();
+  });
+
   it('取消請假後區段分裂回原狀', () => {
     const before = detectBreaks(2027, ['2027-12-27', '2027-12-28', '2027-12-29', '2027-12-30']);
     expect(findSeg(before, '2027-12-24')!.totalDays).toBe(10);

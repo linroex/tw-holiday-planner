@@ -1,5 +1,6 @@
 interface Props {
   onClose: () => void;
+  onReplayTour: () => void;
 }
 
 const STEPS: [string, string][] = [
@@ -29,7 +30,7 @@ const LEGEND: { className: string; label: string; desc: string }[] = [
   { className: 'legend-streak', label: '4', desc: '連假色帶（相連的休假）' },
 ];
 
-export function HelpSheet({ onClose }: Props) {
+export function HelpSheet({ onClose, onReplayTour }: Props) {
   return (
     <div className="sheet-backdrop" onClick={onClose}>
       <div className="sheet" onClick={(e) => e.stopPropagation()}>
@@ -40,6 +41,10 @@ export function HelpSheet({ onClose }: Props) {
             知道了
           </button>
         </div>
+
+        <button type="button" className="btn-secondary tour-replay" onClick={onReplayTour}>
+          🧭 播放互動導覽（直接在畫面上指給你看）
+        </button>
 
         <ol className="help-steps">
           {STEPS.map(([title, desc]) => (

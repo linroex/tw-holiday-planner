@@ -12,6 +12,7 @@ import { getHolidayMap, SUPPORTED_YEARS } from '../data';
 import { ownerYearOf, usePlans } from '../state/PlanContext';
 import { BreakDetailSheet } from './BreakDetailSheet';
 import { HelpSheet } from './HelpSheet';
+import { Tour, type TourStep } from './Tour';
 import { BreakList } from './BreakList';
 import { QuotaBar } from './QuotaBar';
 import { QuotaSheet } from './QuotaSheet';
@@ -22,6 +23,40 @@ import { monthElementId, YearCalendar } from './YearCalendar';
 const YEARS = SUPPORTED_YEARS;
 const LAST_YEAR = YEARS[YEARS.length - 1]!;
 
+const TOUR_STEPS: TourStep[] = [
+  {
+    // 鎖定最新年份 1 月的上班日，避免導覽把畫面捲到年曆最前面
+    selector: `#month-${LAST_YEAR}-1 .day-workday`,
+    title: '點上班日標記請假',
+    text: '點一下變成琥珀色「特休」，再點一次取消。跟週末、國定假日連起來的休假，會用黃色色帶顯示成一段連假。',
+  },
+  {
+    selector: '.quota-info',
+    title: '特休額度在左下角',
+    text: '已用幾天、剩幾天一目了然；點一下可以直接調整今年的特休天數（每個年份分開計算）。',
+  },
+  {
+    selector: '.quota-bar .btn-secondary',
+    title: '連假總覽',
+    text: '全年所有連假的清單。點任何一段可以幫它取名（例如「帛琉潛水」）、記下機票住宿備註。',
+  },
+  {
+    selector: '.quota-bar .btn-primary',
+    title: '分享與匯出',
+    text: '推薦工具給朋友、分享你的行程（不含備註），或匯出 .ics 到 Google／Apple 日曆。',
+  },
+  {
+    selector: '.year-select',
+    title: '切換年份',
+    text: '在 2026／2027 之間快速跳轉；手動捲動月曆時，這裡也會自動跟著更新。',
+  },
+  {
+    selector: '.btn-help',
+    title: '隨時回來看說明',
+    text: '忘記怎麼用？點這個問號查看完整說明，也可以從那裡重新播放這個導覽。',
+  },
+];
+
 export function Planner() {
   const { plans, dispatchFor, firstRun } = usePlans();
   const [listOpen, setListOpen] = useState(false);
@@ -30,6 +65,7 @@ export function Planner() {
   const [shareOpen, setShareOpen] = useState(false);
   const [quotaOpen, setQuotaOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [tourActive, setTourActive] = useState(false);
   const [settings, setSettings] = useState<DisplaySettings>(loadSettings);
   const [activeYear, setActiveYear] = useState(() => {
     const last = loadSettings().lastYear;
@@ -216,6 +252,10 @@ export function Planner() {
             行政院人事行政總處通常在<b>前一年 5–6 月</b>核定公告次年的辦公日曆表，
             2028 年版預計 <b>2027 年年中</b>公布，公告後就會更新進來，不用來問囉 😉
           </p>
+          <p>
+            要先規劃跨年？上面 2028 年 1 月的格子<b>現在就能標記請假</b>（不扣 2027
+            特休），公告後的假日會自動接上。
+          </p>
         </div>
       </main>
 
@@ -292,12 +332,23 @@ export function Planner() {
           }}
           onClose={() => {
             setSettingsOpen(false);
+            if (!onboarded) setTourActive(true); // 首次設定完 → 播放導覽
             setOnboarded(true);
           }}
         />
       )}
 
-      {helpOpen && <HelpSheet onClose={() => setHelpOpen(false)} />}
+      {helpOpen && (
+        <HelpSheet
+          onClose={() => setHelpOpen(false)}
+          onReplayTour={() => {
+            setHelpOpen(false);
+            setTourActive(true);
+          }}
+        />
+      )}
+
+      {tourActive && <Tour steps={TOUR_STEPS} onClose={() => setTourActive(false)} />}
 
       {toast && <div className="toast">{toast}</div>}
     </div>
