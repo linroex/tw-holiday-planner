@@ -184,12 +184,18 @@
   background: linear-gradient(to left, var(--band) 45%, transparent);
 }
 
-/* 行程名稱：貼紙式標籤，故意跨在兩天中間，一看就知道是「橫跨」的行程 */
-.seg-name {
+/* 行程名稱：貼紙在該列的區段範圍內置中（寬度由 DayCell 依列跨格數計算） */
+.seg-name-row {
   position: absolute;
-  left: 55%;
+  left: 0;
   bottom: 6px;
   z-index: 2;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.seg-name {
   font-size: 13px;
   font-weight: 700;
   line-height: 1.3;
@@ -200,14 +206,7 @@
   border-radius: 8px 10px 9px 11px / 10px 8px 11px 9px;
   box-shadow: 1px 1.5px 0 rgba(69, 59, 46, 0.18);
   white-space: nowrap;
-  pointer-events: none;
   transform: rotate(-2deg);
-}
-
-/* 該列只有一格（段落在此結束）→ 貼紙置中，不突出到區段外 */
-.seg-name-solo {
-  left: 50%;
-  transform: translateX(-50%) rotate(-2deg);
 }
 
 /* 邊界月份（前一年 12 月／次年 1 月）標題較淡 */

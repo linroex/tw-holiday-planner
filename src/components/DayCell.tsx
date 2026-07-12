@@ -13,6 +13,8 @@ interface Props {
   /** 該月第一天／最後一天：連假跨月時色帶改為漸層延續而非封口 */
   isMonthStart: boolean;
   isMonthEnd: boolean;
+  /** 區段在本列自此格起延續的格數（貼紙在該列置中用） */
+  rowSpan: number;
   isToday: boolean;
   isPast: boolean;
   isSelected: boolean;
@@ -36,6 +38,7 @@ export function DayCell({
   segInfo,
   isMonthStart,
   isMonthEnd,
+  rowSpan,
   isToday,
   isPast,
   isSelected,
@@ -59,8 +62,8 @@ export function DayCell({
   // 區段已命名 → 貼紙標籤代表整段，段內各日的假名／請假字樣一律隱藏以免雜亂
   const label = segInfo?.name ? null : cellLabel(status, entry);
 
-  // 貼紙在區段起點＋每週列的第一格＋跨月的第一格重複出現，
-  // 長區段的每一列都看得到名稱（不會像只有第一天去）
+  // 貼紙在區段起點＋每週列的第一格＋跨月的第一格出現，
+  // 並在該列的區段範圍內置中（長區段每一列都看得到名稱）
   const showName =
     !!segInfo?.name && (segInfo.isStart || weekday === weekStart || isMonthStart);
 
@@ -69,8 +72,11 @@ export function DayCell({
       <span className="day-num">{day}</span>
       {label && <span className="day-label">{label}</span>}
       {showName && (
-        <span className={`seg-name${segInfo.isEnd ? ' seg-name-solo' : ''}`}>
-          {segInfo.name}
+        <span
+          className="seg-name-row"
+          style={{ width: `calc(${rowSpan * 100}% + ${(rowSpan - 1) * 4}px)` }}
+        >
+          <span className="seg-name">{segInfo.name}</span>
         </span>
       )}
     </button>

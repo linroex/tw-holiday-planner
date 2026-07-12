@@ -1,6 +1,13 @@
 import type { HolidayEntry } from '../data/types';
 import type { BreakSegment } from '../lib/breaks';
-import { daysInMonth, toEpochDay, weekdayOf, WEEKDAY_LABELS, type ISODate } from '../lib/date';
+import {
+  daysInMonth,
+  isoToEpochDay,
+  toEpochDay,
+  weekdayOf,
+  WEEKDAY_LABELS,
+  type ISODate,
+} from '../lib/date';
 import { getDayStatus } from '../lib/dayStatus';
 import { DayCell } from './DayCell';
 import { monthElementId, type DayTapHandler, type SegCellInfo } from './YearCalendar';
@@ -64,12 +71,22 @@ export function MonthGrid({
           const status = getDayStatus(epochDay, holidayMap, leaveSet);
           const segInfo = segMap.get(iso);
           const entry = holidayMap.get(iso);
+          const wd = weekdayOf(epochDay);
+          // 此格起算，區段在本列還延續幾格（受區段結尾／週界／月界限制）——貼紙置中用
+          const rowSpan = segInfo
+            ? Math.min(
+                isoToEpochDay(segInfo.seg.end) - epochDay,
+                (weekStart + 6 - wd + 7) % 7,
+                numDays - 1 - i,
+              ) + 1
+            : 1;
           return (
             <DayCell
               key={iso}
               iso={iso}
               day={i + 1}
-              weekday={weekdayOf(epochDay)}
+              weekday={wd}
+              rowSpan={rowSpan}
               status={status}
               entry={entry?.muted ? undefined : entry}
               segInfo={segInfo}

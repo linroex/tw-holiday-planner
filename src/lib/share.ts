@@ -82,12 +82,13 @@ export function encodeShareHash(plans: UserPlan[]): string {
   return HASH_PREFIX + LZString.compressToEncodedURIComponent(JSON.stringify(payload));
 }
 
-/** 備份：所有年份、含備註、含過去（給自己的完整快照） */
+/** 備份：所有年份、含備註；同樣捨棄過去資料，避免連結隨時間越來越長 */
 export function encodeBackupHash(plans: UserPlan[]): string {
+  const today = todayISO();
   const payload: PayloadV2 = {
     v: 2,
     b: 1,
-    p: plans.map((plan) => planToPayload(plan, true)),
+    p: plans.map((plan) => planToPayload(plan, true, today)),
   };
   return HASH_PREFIX + LZString.compressToEncodedURIComponent(JSON.stringify(payload));
 }

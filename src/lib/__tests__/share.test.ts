@@ -72,10 +72,12 @@ describe('分享連結編解碼', () => {
     expect(p2020.annotations).toEqual([]); // 過去的行程名不外流
     const p2027 = decoded.plans.find((p) => p.year === 2027)!;
     expect(p2027.leaveDays).toEqual(samplePlan.leaveDays); // 未來的照常分享
-    // 備份連結（給自己）則完整保留過去
-    const backup = decodeShareHash(encodeBackupHash([pastPlan]))!;
-    expect(backup.plans[0]!.leaveDays).toEqual(pastPlan.leaveDays);
-    expect(backup.plans[0]!.annotations).toEqual(pastPlan.annotations);
+    // 備份連結同樣捨棄過去（控制連結長度），未來資料含備註完整保留
+    const backup = decodeShareHash(encodeBackupHash([pastPlan, samplePlan]))!;
+    expect(backup.plans.find((p) => p.year === 2020)!.leaveDays).toEqual([]);
+    expect(backup.plans.find((p) => p.year === 2027)!.annotations).toEqual(
+      samplePlan.annotations,
+    );
   });
 
   it('只有備註沒有名稱的 annotation 不進分享連結', () => {
