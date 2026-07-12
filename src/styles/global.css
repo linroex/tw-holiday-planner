@@ -1,0 +1,573 @@
+:root {
+  /* 色彩語意 */
+  --c-bg: #fdfbf7;
+  --c-surface: #ffffff;
+  --c-text: #2b2620;
+  --c-muted: #8d8579;
+  --c-border: #eae4d9;
+
+  --c-accent: #d4380d; /* 主色：台灣月曆的假日紅 */
+  --c-holiday-text: #c4320a;
+  --c-holiday-bg: #fdeade;
+  --c-weekend-bg: #faf3ea;
+
+  --c-leave-bg: #f5a623; /* 請假日：琥珀 */
+  --c-leave-text: #ffffff;
+
+  --c-streak: #f0c86e; /* 連假色帶 */
+  --c-streak-selected: #d4380d;
+
+  --c-today: #1677ff;
+  --c-danger: #cf1322;
+
+  --header-h: 52px;
+  --quota-h: 64px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family:
+    -apple-system, 'PingFang TC', 'Noto Sans TC', 'Microsoft JhengHei',
+    system-ui, sans-serif;
+  background: var(--c-bg);
+  color: var(--c-text);
+  line-height: 1.5;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+.app {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+/* ── Header ── */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background: color-mix(in srgb, var(--c-bg) 88%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--c-border);
+}
+
+.header-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.btn-icon {
+  font-size: 20px;
+  padding: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  color: var(--c-muted);
+}
+
+.readonly-badge {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-muted);
+  border: 1px solid var(--c-border);
+  border-radius: 999px;
+  padding: 2px 10px;
+  background: var(--c-surface);
+}
+
+/* ── 主捲動區 ── */
+.calendar-scroll {
+  flex: 1;
+  padding-bottom: calc(var(--quota-h) + env(safe-area-inset-bottom) + 16px);
+}
+
+.usage-hint {
+  font-size: 12px;
+  color: var(--c-muted);
+  text-align: center;
+  padding: 10px 16px 0;
+}
+
+/* ── 底部特休列 ── */
+.quota-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  max-width: 560px;
+  margin: 0 auto;
+  min-height: var(--quota-h);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+  background: var(--c-surface);
+  border-top: 1px solid var(--c-border);
+}
+
+.quota-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+
+.quota-line {
+  font-size: 15px;
+}
+
+.quota-line b {
+  font-size: 18px;
+  color: var(--c-accent);
+}
+
+.quota-sub {
+  font-size: 12px;
+  color: var(--c-muted);
+}
+
+.quota-over .quota-line b,
+.quota-over .quota-sub {
+  color: var(--c-danger);
+  font-weight: 700;
+}
+
+.btn-primary,
+.btn-secondary {
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.btn-primary {
+  background: var(--c-accent);
+  color: #fff;
+}
+
+.btn-primary:active {
+  filter: brightness(0.9);
+}
+
+.btn-secondary {
+  background: var(--c-holiday-bg);
+  color: var(--c-accent);
+}
+
+.btn-text {
+  color: var(--c-accent);
+  font-weight: 600;
+  padding: 8px 4px;
+  min-height: 44px;
+}
+
+.btn-danger {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 8px;
+  border: 1px solid color-mix(in srgb, var(--c-danger) 40%, transparent);
+  border-radius: 12px;
+  color: var(--c-danger);
+  font-weight: 600;
+}
+
+/* ── 連假清單面板（QuotaBar 上方） ── */
+.break-panel {
+  position: fixed;
+  bottom: calc(var(--quota-h) + env(safe-area-inset-bottom));
+  left: 0;
+  right: 0;
+  z-index: 25;
+  max-width: 560px;
+  margin: 0 auto;
+  max-height: 55dvh;
+  overflow-y: auto;
+  background: var(--c-surface);
+  border-top: 1px solid var(--c-border);
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.12);
+  padding: 12px 16px 8px;
+}
+
+.break-panel-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.break-panel-count {
+  font-size: 13px;
+  color: var(--c-muted);
+}
+
+.break-list {
+  list-style: none;
+}
+
+.break-item {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    'name badges'
+    'range badges';
+  text-align: left;
+  padding: 12px 4px;
+  border-bottom: 1px solid var(--c-border);
+  gap: 0 10px;
+}
+
+.break-list li:last-child .break-item {
+  border-bottom: none;
+}
+
+.break-name {
+  grid-area: name;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.break-note-dot {
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+.break-range {
+  grid-area: range;
+  font-size: 13px;
+  color: var(--c-muted);
+}
+
+.break-badges {
+  grid-area: badges;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.badge {
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+
+.badge-days {
+  background: var(--c-holiday-bg);
+  color: var(--c-accent);
+}
+
+.badge-leave {
+  background: color-mix(in srgb, var(--c-leave-bg) 22%, transparent);
+  color: #b26a00;
+}
+
+.badge-nextyear {
+  background: #eef4ff;
+  color: #1d4fd7;
+}
+
+.empty-hint {
+  color: var(--c-muted);
+  font-size: 14px;
+  text-align: center;
+  padding: 20px 0;
+}
+
+/* ── Bottom sheet（詳情、設定） ── */
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(30, 20, 10, 0.35);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.sheet {
+  width: 100%;
+  max-width: 560px;
+  background: var(--c-surface);
+  border-radius: 20px 20px 0 0;
+  padding: 8px 20px calc(20px + env(safe-area-inset-bottom));
+  animation: sheet-up 0.22s ease-out;
+  max-height: 85dvh;
+  overflow-y: auto;
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(40px);
+    opacity: 0.5;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.sheet-handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--c-border);
+  margin: 4px auto 10px;
+}
+
+.sheet-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.sheet-title {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.sheet-subtitle {
+  font-size: 13px;
+  color: var(--c-muted);
+  margin-top: 2px;
+}
+
+.field {
+  display: block;
+  margin-bottom: 14px;
+}
+
+.field-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-muted);
+  margin-bottom: 6px;
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  border: 1px solid var(--c-border);
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 16px; /* ≥16px 避免 iOS 聚焦時自動縮放 */
+  background: var(--c-bg);
+  resize: vertical;
+}
+
+.field input:focus,
+.field textarea:focus {
+  outline: 2px solid var(--c-accent);
+  border-color: transparent;
+}
+
+.detail-holidays {
+  font-size: 13px;
+  color: var(--c-muted);
+}
+
+.btn-gcal {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  min-height: 44px;
+  line-height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--c-border);
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.export-section {
+  margin-top: 14px;
+  border-top: 1px dashed var(--c-border);
+  padding-top: 12px;
+}
+
+.export-ics {
+  width: 100%;
+  margin: 6px 0;
+}
+
+.detail-others {
+  margin-top: 12px;
+  border-top: 1px dashed var(--c-border);
+  padding-top: 10px;
+}
+
+.detail-other-item {
+  font-size: 13px;
+  color: var(--c-muted);
+}
+
+/* ── 設定 ── */
+.settings-intro {
+  font-size: 14px;
+  margin-bottom: 14px;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.stepper-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  border: 1px solid var(--c-border);
+  font-size: 22px;
+  background: var(--c-bg);
+}
+
+.stepper-btn:disabled {
+  opacity: 0.35;
+}
+
+.stepper-value {
+  font-size: 20px;
+  font-weight: 700;
+  min-width: 64px;
+  text-align: center;
+}
+
+.segmented {
+  display: flex;
+  border: 1px solid var(--c-border);
+  border-radius: 12px;
+  overflow: hidden;
+  width: fit-content;
+}
+
+.segmented button {
+  min-width: 84px;
+  min-height: 44px;
+  font-size: 15px;
+  color: var(--c-muted);
+  background: var(--c-bg);
+}
+
+.segmented .segmented-on {
+  background: var(--c-accent);
+  color: #fff;
+  font-weight: 700;
+}
+
+.settings-footnote {
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--c-muted);
+}
+
+/* ── 分享面板 ── */
+.share-url {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 12px !important;
+  word-break: break-all;
+  color: var(--c-muted);
+}
+
+.share-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.share-copy {
+  flex: 1;
+}
+
+/* ── 分享唯讀模式 ── */
+.share-breaks {
+  padding: 8px 16px 24px;
+}
+
+.decode-error {
+  background: #fff1f0;
+  color: var(--c-danger);
+  font-size: 13px;
+  text-align: center;
+  padding: 8px 16px;
+}
+
+/* ── 桌面版：放寬版心，一次看整年 ── */
+@media (min-width: 900px) {
+  .app,
+  .quota-bar {
+    max-width: 1100px;
+  }
+}
+
+@media (min-width: 1320px) {
+  .app,
+  .quota-bar {
+    max-width: 1440px;
+  }
+}
+
+/* ── Toast ── */
+.toast {
+  position: fixed;
+  top: calc(var(--header-h) + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  background: rgba(43, 38, 32, 0.92);
+  color: #fff;
+  font-size: 14px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  white-space: nowrap;
+  animation: toast-in 0.18s ease-out;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -6px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}

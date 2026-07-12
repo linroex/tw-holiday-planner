@@ -1,0 +1,218 @@
+.year-calendar {
+  padding: 4px 12px 16px;
+}
+
+.month {
+  margin-top: 18px;
+  scroll-margin-top: var(--header-h);
+}
+
+.month-title {
+  font-size: 16px;
+  font-weight: 700;
+  padding: 0 6px 6px;
+}
+
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px 4px;
+}
+
+.weekday-row {
+  margin-bottom: 2px;
+}
+
+.weekday {
+  text-align: center;
+  font-size: 11px;
+  color: var(--c-muted);
+  padding: 2px 0;
+}
+
+.weekday-off {
+  color: var(--c-holiday-text);
+}
+
+/* ── 日格 ── */
+.day {
+  position: relative;
+  min-height: 54px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 6px 1px 9px;
+  border-radius: 10px;
+  transition: background-color 0.15s;
+}
+
+.day-num {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.day-label {
+  font-size: 9px;
+  line-height: 1.2;
+  margin-top: 1px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 週末 / 假日：台灣月曆慣例紅字 */
+.day-weekend {
+  color: var(--c-holiday-text);
+  background: var(--c-weekend-bg);
+}
+
+.day-holiday {
+  color: var(--c-holiday-text);
+  background: var(--c-holiday-bg);
+}
+
+.day-holiday .day-num {
+  font-weight: 700;
+}
+
+/* 請假日：琥珀底 */
+.day-leave {
+  background: var(--c-leave-bg);
+  color: var(--c-leave-text);
+}
+
+.day-leave .day-label {
+  font-weight: 700;
+}
+
+/* 補班日 */
+.day-makeup-workday {
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent 0 4px,
+    rgba(0, 0, 0, 0.04) 4px 8px
+  );
+}
+
+.day-makeup-workday .day-label {
+  color: var(--c-muted);
+}
+
+.day-workday:active,
+.day-makeup-workday:active {
+  background-color: #f1ead9;
+}
+
+/* 今日 */
+.day-today {
+  box-shadow: inset 0 0 0 2px var(--c-today);
+}
+
+/* ── 連假色帶：區段內每日底部一條連通的帶子 ── */
+.day {
+  --band: transparent;
+}
+
+.seg {
+  --band: var(--c-streak);
+}
+
+/* 色帶向左右外推 4px（= column gap），跨過格子間隙保持連續 */
+.seg::after {
+  content: '';
+  position: absolute;
+  left: -4px;
+  right: -4px;
+  bottom: -3px;
+  height: 4px;
+  border-radius: 0;
+  background: var(--band);
+  pointer-events: none;
+}
+
+.seg-start::after {
+  left: 4px;
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+
+.seg-end::after {
+  right: 4px;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+/* 行程名稱：顯示在區段起始格，像 Google Calendar 事件橫跨數格 */
+.seg-name {
+  position: absolute;
+  left: 3px;
+  bottom: 3px;
+  z-index: 2;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #7a5200;
+  white-space: nowrap;
+  pointer-events: none;
+  text-shadow:
+    0 0 3px var(--c-bg),
+    0 0 3px var(--c-bg),
+    0 0 3px var(--c-bg);
+}
+
+/* 邊界月份（前一年 12 月／次年 1 月）標題較淡 */
+.month-boundary .month-title {
+  color: var(--c-muted);
+  font-weight: 600;
+}
+
+/* 從清單點入時高亮該區段 */
+.seg-selected {
+  --band: var(--c-streak-selected);
+}
+
+.seg-selected::after {
+  height: 5px;
+}
+
+/* 週末只有兩天時不是連假，維持素帶（由 JS 不加 seg class 控制，備援） */
+
+@media (min-width: 480px) {
+  .day {
+    min-height: 60px;
+  }
+}
+
+/* ── 桌面：一整年多欄檢視 ── */
+@media (min-width: 900px) {
+  .year-calendar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px 28px;
+    align-items: start;
+    padding: 8px 24px 24px;
+  }
+
+  .month {
+    margin-top: 8px;
+  }
+
+  .day {
+    min-height: 46px;
+    padding-top: 4px;
+    padding-bottom: 8px;
+  }
+
+  .day-num {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 1320px) {
+  .year-calendar {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
