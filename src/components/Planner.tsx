@@ -18,6 +18,7 @@ import { QuotaBar } from './QuotaBar';
 import { QuotaSheet } from './QuotaSheet';
 import { SettingsSheet } from './SettingsSheet';
 import { ShareSheet } from './ShareSheet';
+import { WelcomeSheet } from './WelcomeSheet';
 import { monthElementId, YearCalendar } from './YearCalendar';
 
 const YEARS = SUPPORTED_YEARS;
@@ -60,8 +61,9 @@ const TOUR_STEPS: TourStep[] = [
 export function Planner() {
   const { plans, dispatchFor, firstRun } = usePlans();
   const [listOpen, setListOpen] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(firstRun);
-  const [onboarded, setOnboarded] = useState(!firstRun);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [welcomeOpen, setWelcomeOpen] = useState(firstRun);
+  const firstMarkHinted = useRef(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [quotaOpen, setQuotaOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
@@ -166,7 +168,14 @@ export function Planner() {
         showToast('這天已經過去啦');
         return;
       }
-      dispatchFor(ownerYearOf(iso), { type: 'toggle-leave', date: iso });
+      const owner = ownerYearOf(iso);
+      const isMarking = !plans[owner]!.leaveDays.includes(iso);
+      dispatchFor(owner, { type: 'toggle-leave', date: iso });
+      // 首次使用者第一次成功標記時，在對的時機教「預算在左下角」
+      if (isMarking && firstRun && !firstMarkHinted.current) {
+        firstMarkHinted.current = true;
+        showToast('已標記！左下角可調整你的請假預算');
+      }
       return;
     }
     // 點連假段內的假日／週末 → 直接開啟該段的編輯面板
@@ -328,24 +337,25 @@ export function Planner() {
         <SettingsSheet
           years={YEARS}
           quotas={Object.fromEntries(YEARS.map((y) => [y, plans[y]!.annualLeaveQuota]))}
-          firstRun={!onboarded}
           weekStart={settings.weekStart}
           onSetWeekStart={(weekStart) => updateSettings({ ...settings, weekStart })}
           onSetQuota={(year, quota) => dispatchFor(year, { type: 'set-quota', quota })}
-          onStartTour={() => {
-            setSettingsOpen(false);
-            setOnboarded(true);
-            setTourActive(true);
-          }}
           onReset={() => {
             // 完整重置：所有年份的規劃＋顯示偏好一併清除，重載後回到首次使用引導
             clearAllData();
             location.reload();
           }}
-          onClose={() => {
-            setSettingsOpen(false);
-            setOnboarded(true);
+          onClose={() => setSettingsOpen(false)}
+        />
+      )}
+
+      {welcomeOpen && (
+        <WelcomeSheet
+          onStartTour={() => {
+            setWelcomeOpen(false);
+            setTourActive(true);
           }}
+          onClose={() => setWelcomeOpen(false)}
         />
       )}
 
