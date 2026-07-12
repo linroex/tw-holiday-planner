@@ -118,6 +118,8 @@ export function WeekStream({
               {Array.from({ length: 7 }, (_, i) => {
                 const epochDay = weekStartDay + i;
                 const iso = epochDayToISO(epochDay);
+                // 月份交界週：標題是新月份，屬於上個月的尾巴淡化顯示
+                const outside = firstOfMonth !== undefined && epochDay < firstOfMonth;
                 const status = getDayStatus(epochDay, holidayMap, leaveSet);
                 const segInfo = segMap.get(iso);
                 const entry = holidayMap.get(iso);
@@ -134,7 +136,7 @@ export function WeekStream({
                     status={status}
                     entry={entry?.muted ? undefined : entry}
                     segInfo={segInfo}
-                    outside={false}
+                    outside={outside}
                     isToday={iso === today}
                     isPast={iso < today}
                     isSelected={segInfo?.seg === selectedSegment}
