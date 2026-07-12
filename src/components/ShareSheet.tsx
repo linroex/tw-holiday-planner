@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import type { UserPlan } from '../data/types';
+import { SocialLinks } from './AppFooter';
 import type { BreakSegment } from '../lib/breaks';
 import { buildICS } from '../lib/calendar';
 import { encodePlanToHash } from '../lib/share';
@@ -159,6 +160,12 @@ export function ShareSheet({ plan, segments, onClose }: Props) {
             匯出有命名或有請假的連假為全天事件（含備註）。Google 日曆：設定 → 匯入與匯出；
             手機直接開啟檔案即可加入。
           </p>
+        </div>
+
+        <div className="share-section">
+          <span className="field-label">喜歡這個工具嗎？</span>
+          <p className="share-hint">給顆星星或追蹤作者，看新功能上線 🙌</p>
+          <SocialLinks />
         </div>
       </div>
     </div>

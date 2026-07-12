@@ -1,3 +1,5 @@
+import { SocialLinks } from './AppFooter';
+
 interface Props {
   onClose: () => void;
   onReplayTour: () => void;
@@ -84,6 +86,12 @@ export function HelpSheet({ onClose, onReplayTour }: Props) {
         </button>
 
         <HelpContent />
+
+        <div className="about-section">
+          <span className="field-label">喜歡這個工具嗎？</span>
+          <p className="about-text">給顆星星或追蹤作者，看新功能上線 🙌</p>
+          <SocialLinks />
+        </div>
       </div>
     </div>
   );
