@@ -277,8 +277,7 @@ export function Planner() {
       {showBackupHint && (
         <div className="backup-hint">
           <p>
-            💾 太久沒打開的話，Safari 可能會清掉你的規劃。
-            <b>把本站加入主畫面</b>就不會被清（點下方分享 ⬆️ →「加入主畫面」）；或先備份一份。
+            💾 太久沒打開的話，Safari 可能會清掉你的規劃——完成規劃後，記得<b>匯出備份一份</b>。
           </p>
           <div className="backup-hint-actions">
             <button
