@@ -47,7 +47,7 @@ const TOUR_STEPS: TourStep[] = [
   {
     selector: '.quota-bar .btn-export',
     title: '匯出與分享',
-    text: '「匯出」給自己：備份連結、還原、下載進 Google／Apple 日曆；旁邊的「分享」給別人：推薦工具、把行程傳給朋友（不含備註）。',
+    text: '「匯出」給自己：備份連結、下載進 Google／Apple 日曆；旁邊的「分享」給別人：推薦工具、把行程傳給朋友（不含備註）。',
   },
   {
     selector: '.year-select',

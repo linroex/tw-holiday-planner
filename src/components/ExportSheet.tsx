@@ -2,8 +2,7 @@ import { useRef, useState } from 'react';
 import type { UserPlan } from '../data/types';
 import { copyText } from '../lib/clipboard';
 import { buildICS } from '../lib/calendar';
-import { decodeShareHash, encodePlanToHash } from '../lib/share';
-import { loadPlan, savePlan } from '../lib/storage';
+import { encodePlanToHash } from '../lib/share';
 import type { BreakSegment } from '../lib/breaks';
 
 interface Props {
@@ -13,14 +12,12 @@ interface Props {
 }
 
 /**
- * 匯出面板：給自己用的三件事——備份連結（含備註快照）、貼上匯入、下載 .ics。
+ * 匯出面板：給自己用的兩件事——備份連結（含備註快照，打開即還原）、下載 .ics。
  * 給朋友的在「分享」面板（不含備註），兩者分開後不需要任何勾選。
  */
 export function ExportSheet({ plan, segments, onClose }: Props) {
   const urlRef = useRef<HTMLTextAreaElement>(null);
   const [copied, setCopied] = useState(false);
-  const [importOpen, setImportOpen] = useState(false);
-  const [importText, setImportText] = useState('');
 
   const exportUrl = `${location.origin}${location.pathname}?utm_source=share&utm_medium=app&utm_campaign=export_link${encodePlanToHash(plan, true)}`;
 
@@ -33,25 +30,6 @@ export function ExportSheet({ plan, segments, onClose }: Props) {
       urlRef.current?.focus();
       urlRef.current?.setSelectionRange(0, exportUrl.length);
     }
-  };
-
-  const doImport = () => {
-    const match = importText.match(/#share=\S+/);
-    const decoded = match ? decodeShareHash(match[0]) : null;
-    if (!decoded) {
-      alert('無法解析，請確認貼上的是完整的匯出連結');
-      return;
-    }
-    const existing = loadPlan(decoded.year);
-    if (
-      existing &&
-      (existing.leaveDays.length > 0 || existing.annotations.length > 0) &&
-      !confirm(`將覆蓋這裡 ${decoded.year} 年的規劃，確定匯入嗎？`)
-    ) {
-      return;
-    }
-    savePlan(decoded);
-    location.reload();
   };
 
   const downloadICS = () => {
@@ -77,7 +55,7 @@ export function ExportSheet({ plan, segments, onClose }: Props) {
         <div className="share-section">
           <span className="field-label">① 備份連結</span>
           <p className="share-hint">
-            整份規劃（含備註）壓縮成一條連結，存進記事本就是備份。是匯出當下的快照——之後有修改，記得重新匯出。
+            整份規劃（含備註）壓縮成一條連結，存進記事本就是備份，<b>要還原時打開連結即可</b>。是匯出當下的快照——之後有修改，記得重新匯出。
           </p>
           <textarea
             ref={urlRef}
@@ -90,28 +68,6 @@ export function ExportSheet({ plan, segments, onClose }: Props) {
           <button type="button" className="btn-primary share-copy" onClick={copy}>
             {copied ? '已複製 ✓' : '複製備份連結'}
           </button>
-          {!importOpen ? (
-            <button
-              type="button"
-              className="btn-text import-toggle"
-              onClick={() => setImportOpen(true)}
-            >
-              已有備份連結？貼上還原 →
-            </button>
-          ) : (
-            <>
-              <textarea
-                className="share-url"
-                rows={3}
-                placeholder="貼上備份連結…"
-                value={importText}
-                onChange={(e) => setImportText(e.target.value)}
-              />
-              <button type="button" className="btn-secondary import-go" onClick={doImport}>
-                還原
-              </button>
-            </>
-          )}
         </div>
 
         <div className="share-section">
