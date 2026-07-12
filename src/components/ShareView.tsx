@@ -7,14 +7,12 @@ import { BreakList } from './BreakList';
 import { YearCalendar } from './YearCalendar';
 
 interface Props {
-  /** 分享連結恰一個年份；備份連結為所有年份 */
+  /** 朋友分享的規劃（所有年份、不含備註、不含過去） */
   plans: UserPlan[];
-  /** true = 自己匯出的備份連結；false = 朋友分享的行程 */
-  isBackup: boolean;
 }
 
-/** 開啟分享／備份連結：唯讀檢視（先預覽內容）＋ 匯入或還原 */
-export function ShareView({ plans, isBackup }: Props) {
+/** 開啟朋友的分享連結：唯讀檢視（先預覽內容）＋ 匯入 */
+export function ShareView({ plans }: Props) {
   const years = useMemo(() => plans.map((p) => p.year).sort((a, b) => a - b), [plans]);
   const leaveDays = useMemo(() => plans.flatMap((p) => p.leaveDays).sort(), [plans]);
   const annotations = useMemo(() => plans.flatMap((p) => p.annotations), [plans]);
@@ -50,17 +48,11 @@ export function ShareView({ plans, isBackup }: Props) {
   return (
     <div className="app share-view">
       <header className="header">
-        <h1 className="header-title">
-          {isBackup ? `備份（${years.join('・')}）` : '朋友的連假規劃'}
-        </h1>
-        <span className="readonly-badge">{isBackup ? '備份' : '唯讀'}</span>
+        <h1 className="header-title">朋友的連假規劃</h1>
+        <span className="readonly-badge">唯讀</span>
       </header>
       <main className="calendar-scroll">
-        <p className="usage-hint">
-          {isBackup
-            ? '這是匯出的備份（含備註）。確認內容沒問題後，按下方還原。'
-            : `這是朋友分享的規劃（請假 ${totalLeave} 天）`}
-        </p>
+        <p className="usage-hint">這是朋友分享的規劃（請假 {totalLeave} 天）</p>
         <YearCalendar
           years={years}
           leaveDays={leaveDays}
@@ -84,10 +76,10 @@ export function ShareView({ plans, isBackup }: Props) {
           <span className="quota-line">
             請假 <b>{totalLeave}</b> 天
           </span>
-          <span className="quota-sub">{isBackup ? '你的備份' : '朋友的規劃'}</span>
+          <span className="quota-sub">朋友的規劃</span>
         </div>
         <button type="button" className="btn-primary" onClick={handleImport}>
-          {isBackup ? '還原這份備份' : '匯入到我的規劃'}
+          匯入到我的規劃
         </button>
       </div>
     </div>

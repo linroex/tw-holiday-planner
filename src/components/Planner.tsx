@@ -123,6 +123,11 @@ export function Planner() {
   // 初載捲到上次規劃的年份
   useEffect(() => {
     scrollToYear(activeYear, false);
+    // 開了備份連結但本機已有資料 → 告知未還原，避免以為回滾成功
+    if (sessionStorage.getItem('thp.backup-skipped')) {
+      sessionStorage.removeItem('thp.backup-skipped');
+      showToast('已有本機資料，未還原備份（要還原請先清除資料）');
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
