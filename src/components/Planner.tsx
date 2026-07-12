@@ -34,6 +34,7 @@ export function Planner() {
     return last !== undefined && YEARS.includes(last) ? last : LAST_YEAR;
   });
   const [selectedSegment, setSelectedSegment] = useState<BreakSegment | null>(null);
+  const [detailFromList, setDetailFromList] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const scrollRef = useRef<HTMLElement>(null);
@@ -130,6 +131,13 @@ export function Planner() {
       dispatchFor(ownerYearOf(iso), { type: 'toggle-leave', date: iso });
       return;
     }
+    // 點連假段內的假日／週末 → 直接開啟該段的編輯面板
+    const seg = segments.find((s) => s.start <= iso && iso <= s.end);
+    if (seg) {
+      setSelectedSegment(seg);
+      setDetailFromList(false);
+      return;
+    }
     const entry = getHolidayMap().get(iso);
     if (entry) {
       showToast(`${entry.name}${entry.kind === 'makeup-holiday' ? '（補假）' : ''}`);
@@ -138,6 +146,7 @@ export function Planner() {
 
   const handleSelectSegment = (seg: BreakSegment) => {
     setSelectedSegment(seg);
+    setDetailFromList(true);
     setListOpen(false);
     const { y, m } = fromEpochDay(isoToEpochDay(seg.start));
     document
@@ -244,7 +253,7 @@ export function Planner() {
           }
           onClose={() => {
             setSelectedSegment(null);
-            setListOpen(true); // 詳情是從清單點進來的，完成後回到清單
+            if (detailFromList) setListOpen(true); // 從清單點進來的，完成後回到清單
           }}
         />
       )}
