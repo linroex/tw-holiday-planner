@@ -47,13 +47,11 @@ export function ShareView({ plans, isBackup }: Props) {
     location.replace(location.pathname); // 清除 hash 並以一般模式重新載入
   };
 
-  const sharePlan = plans[0]!;
-
   return (
     <div className="app share-view">
       <header className="header">
         <h1 className="header-title">
-          {isBackup ? `備份（${years.join('・')}）` : `${sharePlan.year} 連假規劃`}
+          {isBackup ? `備份（${years.join('・')}）` : '朋友的連假規劃'}
         </h1>
         <span className="readonly-badge">{isBackup ? '備份' : '唯讀'}</span>
       </header>
@@ -61,7 +59,7 @@ export function ShareView({ plans, isBackup }: Props) {
         <p className="usage-hint">
           {isBackup
             ? '這是匯出的備份（含備註）。確認內容沒問題後，按下方還原。'
-            : `這是朋友分享的規劃（請假 ${totalLeave} / ${sharePlan.annualLeaveQuota} 天）`}
+            : `這是朋友分享的規劃（請假 ${totalLeave} 天）`}
         </p>
         <YearCalendar
           years={years}
@@ -84,7 +82,7 @@ export function ShareView({ plans, isBackup }: Props) {
       <div className="quota-bar">
         <div className="quota-info">
           <span className="quota-line">
-            請假 <b>{totalLeave}</b> {isBackup ? '天' : `/ ${sharePlan.annualLeaveQuota}`}
+            請假 <b>{totalLeave}</b> 天
           </span>
           <span className="quota-sub">{isBackup ? '你的備份' : '朋友的規劃'}</span>
         </div>

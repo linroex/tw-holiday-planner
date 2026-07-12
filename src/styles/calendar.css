@@ -184,10 +184,10 @@
   background: linear-gradient(to left, var(--band) 45%, transparent);
 }
 
-/* 行程名稱：貼紙式標籤，大方蓋在區段上（取了名字，底下是什麼假日不重要） */
+/* 行程名稱：貼紙式標籤，故意跨在兩天中間，一看就知道是「橫跨」的行程 */
 .seg-name {
   position: absolute;
-  left: 2px;
+  left: 55%;
   bottom: 6px;
   z-index: 2;
   font-size: 13px;
@@ -202,6 +202,12 @@
   white-space: nowrap;
   pointer-events: none;
   transform: rotate(-2deg);
+}
+
+/* 該列只有一格（段落在此結束）→ 貼紙置中，不突出到區段外 */
+.seg-name-solo {
+  left: 50%;
+  transform: translateX(-50%) rotate(-2deg);
 }
 
 /* 邊界月份（前一年 12 月／次年 1 月）標題較淡 */

@@ -1,6 +1,6 @@
 import LZString from 'lz-string';
 import type { UserPlan } from '../data/types';
-import { epochDayToISO, isoToEpochDay, toEpochDay } from './date';
+import { epochDayToISO, isoToEpochDay, todayISO, toEpochDay } from './date';
 
 /**
  * 分享連結：plan 精簡化（日期轉「距 1/1 天數」整數、欄位縮寫）
@@ -25,10 +25,10 @@ interface SharePayloadV1 extends PlanPayloadV1 {
   b?: 1;
 }
 
-/** v2：備份連結，一次帶所有年份 */
-interface BackupPayloadV2 {
+/** v2：多年份連結；b=1 為備份（含備註、含過去），未帶為分享（不含備註、剝除過去） */
+interface PayloadV2 {
   v: 2;
-  b: 1;
+  b?: 1;
   p: PlanPayloadV1[];
 }
 
@@ -39,13 +39,24 @@ export interface DecodedShare {
   isBackup: boolean;
 }
 
-function planToPayload(plan: UserPlan, includeNotes: boolean): PlanPayloadV1 {
+/**
+ * @param fromDate 只納入這一天（含）以後的請假與命名——分享連結用，
+ *                 避免「已過去的請假」洩漏行蹤；備份不設此參數（全部保留）
+ */
+function planToPayload(
+  plan: UserPlan,
+  includeNotes: boolean,
+  fromDate?: string,
+): PlanPayloadV1 {
   const jan1 = toEpochDay(plan.year, 1, 1);
   return {
     y: plan.year,
     q: plan.annualLeaveQuota,
-    l: plan.leaveDays.map((d) => isoToEpochDay(d) - jan1),
+    l: plan.leaveDays
+      .filter((d) => !fromDate || d >= fromDate)
+      .map((d) => isoToEpochDay(d) - jan1),
     a: plan.annotations
+      .filter((a) => !fromDate || a.anchorDate >= fromDate)
       .filter((a) => a.name.trim() || (includeNotes && a.note.trim()))
       .map((a) =>
         includeNotes
@@ -55,15 +66,25 @@ function planToPayload(plan: UserPlan, includeNotes: boolean): PlanPayloadV1 {
   };
 }
 
-/** 分享給朋友：單一年份、不含備註 */
+/** 舊版單年分享編碼（保留給既有測試與相容驗證用） */
 export function encodePlanToHash(plan: UserPlan, includeNotes = false): string {
   const payload: SharePayloadV1 = { v: 1, ...planToPayload(plan, includeNotes) };
   return HASH_PREFIX + LZString.compressToEncodedURIComponent(JSON.stringify(payload));
 }
 
-/** 備份：所有年份、含備註 */
+/** 分享給朋友：所有年份、不含備註、剝除今天以前的請假與命名（隱私） */
+export function encodeShareHash(plans: UserPlan[]): string {
+  const today = todayISO();
+  const payload: PayloadV2 = {
+    v: 2,
+    p: plans.map((plan) => planToPayload(plan, false, today)),
+  };
+  return HASH_PREFIX + LZString.compressToEncodedURIComponent(JSON.stringify(payload));
+}
+
+/** 備份：所有年份、含備註、含過去（給自己的完整快照） */
 export function encodeBackupHash(plans: UserPlan[]): string {
-  const payload: BackupPayloadV2 = {
+  const payload: PayloadV2 = {
     v: 2,
     b: 1,
     p: plans.map((plan) => planToPayload(plan, true)),
@@ -108,12 +129,12 @@ export function decodeShareHash(hash: string): DecodedShare | null {
     const v = (raw as { v?: unknown }).v;
 
     if (v === 2) {
-      const { b, p } = raw as Partial<BackupPayloadV2>;
-      if (b !== 1 || !Array.isArray(p)) return null;
+      const { b, p } = raw as Partial<PayloadV2>;
+      if (!Array.isArray(p)) return null;
       const plans = p
         .map((x) => (typeof x === 'object' && x !== null ? payloadToPlan(x) : null))
         .filter((x): x is UserPlan => x !== null);
-      return plans.length > 0 ? { isBackup: true, plans } : null;
+      return plans.length > 0 ? { isBackup: b === 1, plans } : null;
     }
 
     if (v === 1) {

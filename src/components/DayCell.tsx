@@ -68,7 +68,11 @@ export function DayCell({
     <button type="button" className={classes.join(' ')} onClick={() => onTap(iso, status)}>
       <span className="day-num">{day}</span>
       {label && <span className="day-label">{label}</span>}
-      {showName && <span className="seg-name">{segInfo.name}</span>}
+      {showName && (
+        <span className={`seg-name${segInfo.isEnd ? ' seg-name-solo' : ''}`}>
+          {segInfo.name}
+        </span>
+      )}
     </button>
   );
 }

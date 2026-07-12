@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import type { UserPlan } from '../../data/types';
-import { decodeShareHash, encodeBackupHash, encodePlanToHash } from '../share';
+import {
+  decodeShareHash,
+  encodeBackupHash,
+  encodePlanToHash,
+  encodeShareHash,
+} from '../share';
 
 const samplePlan: UserPlan = {
   version: 1,
@@ -50,6 +55,27 @@ describe('分享連結編解碼', () => {
     expect(decoded.plans[1]).toEqual(samplePlan);
     const share = decodeShareHash(encodePlanToHash(samplePlan))!;
     expect(share.isBackup).toBe(false);
+  });
+
+  it('分享連結剝除已過去的請假與命名（隱私保護，防洩漏行蹤）', () => {
+    const pastPlan: UserPlan = {
+      version: 1,
+      year: 2020, // 必然全是過去
+      annualLeaveQuota: 7,
+      leaveDays: ['2020-07-01', '2020-07-02'],
+      annotations: [{ anchorDate: '2020-07-01', name: '舊行程', note: '不該外流' }],
+    };
+    const decoded = decodeShareHash(encodeShareHash([pastPlan, samplePlan]))!;
+    expect(decoded.isBackup).toBe(false);
+    const p2020 = decoded.plans.find((p) => p.year === 2020)!;
+    expect(p2020.leaveDays).toEqual([]); // 過去的請假不外流
+    expect(p2020.annotations).toEqual([]); // 過去的行程名不外流
+    const p2027 = decoded.plans.find((p) => p.year === 2027)!;
+    expect(p2027.leaveDays).toEqual(samplePlan.leaveDays); // 未來的照常分享
+    // 備份連結（給自己）則完整保留過去
+    const backup = decodeShareHash(encodeBackupHash([pastPlan]))!;
+    expect(backup.plans[0]!.leaveDays).toEqual(pastPlan.leaveDays);
+    expect(backup.plans[0]!.annotations).toEqual(pastPlan.annotations);
   });
 
   it('只有備註沒有名稱的 annotation 不進分享連結', () => {

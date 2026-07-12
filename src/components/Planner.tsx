@@ -315,7 +315,9 @@ export function Planner() {
         />
       )}
 
-      {shareOpen && <ShareSheet plan={activePlan} onClose={() => setShareOpen(false)} />}
+      {shareOpen && (
+        <ShareSheet plans={YEARS.map((y) => plans[y]!)} onClose={() => setShareOpen(false)} />
+      )}
 
       {activeSegment && (
         <BreakDetailSheet

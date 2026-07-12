@@ -1,19 +1,20 @@
 import { useRef, useState } from 'react';
 import type { UserPlan } from '../data/types';
 import { copyText } from '../lib/clipboard';
-import { encodePlanToHash } from '../lib/share';
+import { encodeShareHash } from '../lib/share';
 import { SocialLinks } from './AppFooter';
 
 interface Props {
-  plan: UserPlan;
+  /** 所有年份——分享同樣不分年份（已過去的請假在編碼時剝除） */
+  plans: UserPlan[];
   onClose: () => void;
 }
 
 /**
- * 分享面板：給別人的兩件事——推薦工具、把行程給朋友看（不含備註）。
- * 給自己的備份／匯入／行事曆在「匯出」面板。
+ * 分享面板：給別人的兩件事——推薦工具、把行程給朋友看（不含備註、不含過去）。
+ * 給自己的備份／行事曆在「匯出」面板。
  */
-export function ShareSheet({ plan, onClose }: Props) {
+export function ShareSheet({ plans, onClose }: Props) {
   const planUrlRef = useRef<HTMLTextAreaElement>(null);
   const [copied, setCopied] = useState<'tool' | 'plan' | null>(null);
 
@@ -21,7 +22,7 @@ export function ShareSheet({ plan, onClose }: Props) {
     `?utm_source=share&utm_medium=app&utm_campaign=${campaign}`;
   const base = `${location.origin}${location.pathname}`;
   const toolUrl = `${base}${utm('tool_link')}`;
-  const planUrl = `${base}${utm('plan_link')}${encodePlanToHash(plan, false)}`;
+  const planUrl = `${base}${utm('plan_link')}${encodeShareHash(plans)}`;
   const canNativeShare = typeof navigator.share === 'function';
 
   const copy = async (key: 'tool' | 'plan', text: string) => {
@@ -54,7 +55,9 @@ export function ShareSheet({ plan, onClose }: Props) {
 
         <div className="share-section">
           <span className="field-label">① 分享行程給朋友</span>
-          <p className="share-hint">朋友打開是唯讀、看不到你的備註，可一鍵匯入。</p>
+          <p className="share-hint">
+            朋友打開是唯讀、看不到你的備註，已過去的請假也不會帶出去。
+          </p>
           <textarea
             ref={planUrlRef}
             className="share-url"
@@ -75,7 +78,7 @@ export function ShareSheet({ plan, onClose }: Props) {
               <button
                 type="button"
                 className="btn-secondary"
-                onClick={() => nativeShare(`我的 ${plan.year} 連假規劃`, planUrl)}
+                onClick={() => nativeShare('我的連假規劃', planUrl)}
               >
                 ⤴ 系統分享
               </button>
