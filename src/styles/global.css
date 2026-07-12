@@ -1,27 +1,32 @@
 :root {
-  /* 色彩語意 */
-  --c-bg: #fdfbf7;
-  --c-surface: #ffffff;
-  --c-text: #2b2620;
-  --c-muted: #8d8579;
-  --c-border: #eae4d9;
+  /* 色彩語意：手帳紙 × 墨水 × 紅筆 × 螢光筆 */
+  --c-bg: #faf5e9;
+  --c-surface: #fffdf6;
+  --c-text: #453b2e;
+  --c-muted: #988b79;
+  --c-border: #e0d5bd;
 
-  --c-accent: #d4380d; /* 主色：台灣月曆的假日紅 */
-  --c-holiday-text: #c4320a;
-  --c-holiday-bg: #fdeade;
-  --c-weekend-bg: #faf3ea;
+  --c-accent: #c9401f; /* 主色：紅筆 */
+  --c-holiday-text: #c03d1c;
+  --c-holiday-bg: #f9e5d3;
+  --c-weekend-bg: #f4ecdb;
 
-  --c-leave-bg: #f5a623; /* 請假日：琥珀 */
+  --c-leave-bg: #f2a93b; /* 請假日：便利貼琥珀 */
   --c-leave-text: #ffffff;
 
-  --c-streak: #f0c86e; /* 連假色帶 */
-  --c-streak-selected: #d4380d;
+  --c-streak: rgba(244, 197, 93, 0.75); /* 連假色帶：螢光筆 */
+  --c-streak-selected: #c9401f;
 
-  --c-today: #1677ff;
-  --c-danger: #cf1322;
+  --c-today: #2b6cb8;
+  --c-danger: #bf1d1d;
 
   --header-h: 52px;
   --quota-h: 64px;
+
+  /* 手繪感：不規則圓角（手畫方框的歪斜） */
+  --wobble-sm: 10px 13px 11px 14px / 13px 10px 14px 11px;
+  --wobble-md: 14px 17px 13px 18px / 17px 13px 18px 14px;
+  --wobble-lg: 22px 26px 20px 28px / 26px 20px 28px 22px;
 }
 
 * {
@@ -41,11 +46,14 @@ body {
 
 body {
   font-family:
-    -apple-system, 'PingFang TC', 'Noto Sans TC', 'Microsoft JhengHei',
-    system-ui, sans-serif;
-  background: var(--c-bg);
+    'LXGW WenKai TC', 'Yu Kyokasho', 'DFKai-SB', 'PingFang TC',
+    'Noto Sans TC', system-ui, sans-serif;
+  /* 手帳點格紙 */
+  background-color: var(--c-bg);
+  background-image: radial-gradient(#dcd0b2 1px, transparent 1px);
+  background-size: 22px 22px;
   color: var(--c-text);
-  line-height: 1.5;
+  line-height: 1.6;
   -webkit-tap-highlight-color: transparent;
   /* App shell：整頁不捲動，捲動交給 .calendar-scroll。
      iOS in-app browser（LINE、SFSafariViewController）的視口高度會隨工具列伸縮，
@@ -86,7 +94,7 @@ textarea {
   justify-content: space-between;
   padding: 0 16px;
   background: var(--c-bg);
-  border-bottom: 1px solid var(--c-border);
+  border-bottom: 2px dashed var(--c-border);
 }
 
 .header-title {
@@ -224,14 +232,15 @@ textarea {
 .btn-secondary {
   min-height: 44px;
   padding: 0 18px;
-  border-radius: 12px;
+  border-radius: var(--wobble-md);
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .btn-primary {
   background: var(--c-accent);
   color: #fff;
+  box-shadow: 2px 2px 0 rgba(69, 59, 46, 0.25); /* 手繪陰影 */
 }
 
 .btn-primary:active {
@@ -239,8 +248,9 @@ textarea {
 }
 
 .btn-secondary {
-  background: var(--c-holiday-bg);
+  background: var(--c-surface);
   color: var(--c-accent);
+  border: 1.5px solid var(--c-accent);
 }
 
 .btn-text {
@@ -396,7 +406,9 @@ textarea {
   width: 100%;
   max-width: 560px;
   background: var(--c-surface);
-  border-radius: 20px 20px 0 0;
+  border: 1.5px solid var(--c-border);
+  border-bottom: none;
+  border-radius: 26px 20px 0 0 / 22px 28px 0 0;
   padding: 8px 20px calc(20px + env(safe-area-inset-bottom));
   animation: sheet-up 0.22s ease-out;
   max-height: 85dvh;
@@ -457,8 +469,8 @@ textarea {
 .field input,
 .field textarea {
   width: 100%;
-  border: 1px solid var(--c-border);
-  border-radius: 12px;
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--wobble-md);
   padding: 12px;
   font-size: 16px; /* ≥16px 避免 iOS 聚焦時自動縮放 */
   background: var(--c-bg);
@@ -650,9 +662,10 @@ textarea {
 .future-note {
   margin: 8px 12px 24px;
   padding: 14px 16px;
-  border: 1px dashed var(--c-border);
-  border-radius: 14px;
+  border: 1.5px dashed #c9b98f;
+  border-radius: var(--wobble-lg);
   background: var(--c-surface);
+  transform: rotate(-0.4deg); /* 手貼的紙條 */
 }
 
 .future-note b {
