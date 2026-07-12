@@ -1,6 +1,8 @@
 import { useRef, useState } from 'react';
 import type { UserPlan } from '../data/types';
 import { copyText } from '../lib/clipboard';
+import { decodeShareHash } from '../lib/share';
+import { loadPlan, savePlan } from '../lib/storage';
 import { SocialLinks } from './AppFooter';
 import type { BreakSegment } from '../lib/breaks';
 import { buildICS } from '../lib/calendar';
@@ -23,6 +25,29 @@ export function ShareSheet({ plan, segments, onClose }: Props) {
   // 預設含備註（匯出/備份為主用途）；勾選「不包含備註」才是給朋友的分享模式
   const [excludeNotes, setExcludeNotes] = useState(false);
   const includeNotes = !excludeNotes;
+  const [importOpen, setImportOpen] = useState(false);
+  const [importText, setImportText] = useState('');
+
+  // 貼上匯出連結還原資料：主畫面 App 與 Safari 的儲存空間是分開的，
+  // 這是把資料搬進 App（或跨裝置還原）唯一不用開連結的路徑
+  const doImport = () => {
+    const match = importText.match(/#share=\S+/);
+    const decoded = match ? decodeShareHash(match[0]) : null;
+    if (!decoded) {
+      alert('無法解析，請確認貼上的是完整的匯出連結');
+      return;
+    }
+    const existing = loadPlan(decoded.year);
+    if (
+      existing &&
+      (existing.leaveDays.length > 0 || existing.annotations.length > 0) &&
+      !confirm(`將覆蓋這裡 ${decoded.year} 年的規劃，確定匯入嗎？`)
+    ) {
+      return;
+    }
+    savePlan(decoded);
+    location.reload();
+  };
   const [copied, setCopied] = useState<'tool' | 'plan' | null>(null);
 
   // UTM 讓站主能用 GA 區分流量來源；放在 query（hash 之前），不影響資料解碼
@@ -137,6 +162,28 @@ export function ShareSheet({ plan, segments, onClose }: Props) {
               ? '⚠️ 連結含你的備註，適合備份、換裝置；之後有修改，記得重新匯出一份'
               : '朋友打開是唯讀、看不到備註，可一鍵匯入'}
           </p>
+          {!importOpen ? (
+            <button
+              type="button"
+              className="btn-text import-toggle"
+              onClick={() => setImportOpen(true)}
+            >
+              已有匯出連結？貼上匯入 →
+            </button>
+          ) : (
+            <>
+              <textarea
+                className="share-url"
+                rows={3}
+                placeholder="貼上匯出連結…"
+                value={importText}
+                onChange={(e) => setImportText(e.target.value)}
+              />
+              <button type="button" className="btn-secondary import-go" onClick={doImport}>
+                匯入
+              </button>
+            </>
+          )}
         </div>
 
         <div className="share-section">

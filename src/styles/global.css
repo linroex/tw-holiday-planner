@@ -957,6 +957,16 @@ textarea {
   flex: 1;
 }
 
+.import-toggle {
+  padding-left: 0;
+  font-size: 14px;
+}
+
+.import-go {
+  width: 100%;
+  margin-bottom: 4px;
+}
+
 /* ── 分享唯讀模式 ── */
 .share-breaks {
   padding: 8px 16px 24px;
