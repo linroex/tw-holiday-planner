@@ -90,9 +90,11 @@ export function savePlan(plan: UserPlan): void {
 }
 
 /**
- * 向瀏覽器申請持久儲存：降低 localStorage 被自動回收的機率
- * （空間壓力、iOS 7 天未訪問等）。使用者手動清除仍會清掉——
- * 完整備份請用「分享・匯出 → 包含備註」的連結。
+ * 向瀏覽器申請持久儲存：防止空間壓力下的配額回收（Chrome/Firefox/Android 有效）。
+ * 注意：擋不住 Safari ITP 的七天刪除——Apple 只接受「加入主畫面」這種使用者
+ * 主動手勢作為豁免，不接受腳本自行申請（否則追蹤器都會呼叫它），
+ * 見 https://bugs.webkit.org/show_bug.cgi?id=209563 。
+ * iOS Safari 的防護是備份提示卡＋引導加入主畫面；手動清除則只能靠備份連結。
  */
 export async function requestPersistentStorage(): Promise<void> {
   try {
