@@ -24,7 +24,9 @@ export function WelcomeSheet({ onStartTour, onClose }: Props) {
             直接開始
           </button>
         </div>
-        <p className="settings-footnote">請假預算預設 7 天，左下角隨時可以調整。</p>
+        <p className="settings-footnote">
+          🔒 所有資料只存在你的裝置上，不上傳、不追蹤。請假預算預設 7 天，左下角隨時可調。
+        </p>
       </div>
     </div>
   );

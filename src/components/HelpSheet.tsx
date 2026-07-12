@@ -56,6 +56,9 @@ export function HelpContent() {
       </div>
 
       <p className="settings-footnote">
+        🔒 隱私：所有資料只存在你的裝置上，不上傳、不追蹤（完整說明見頁面最下方）。
+      </p>
+      <p className="settings-footnote">
         放假日以行政院人事行政總處核定的辦公日曆表為準（2026 全年 120 日、2027 全年 121
         日，均無補班日）；勞基法適用的公司請假規定可能略有不同。 2028 年行事曆預計 2027
         年年中由政府公告，屆時會更新進來。
