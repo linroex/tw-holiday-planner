@@ -82,6 +82,21 @@ export function savePlan(plan: UserPlan): void {
   }
 }
 
+/**
+ * 向瀏覽器申請持久儲存：降低 localStorage 被自動回收的機率
+ * （空間壓力、iOS 7 天未訪問等）。使用者手動清除仍會清掉——
+ * 完整備份請用「分享・匯出 → 包含備註」的連結。
+ */
+export async function requestPersistentStorage(): Promise<void> {
+  try {
+    if (navigator.storage?.persist && !(await navigator.storage.persisted())) {
+      await navigator.storage.persist();
+    }
+  } catch {
+    // 不支援或被拒都靜默，App 照常運作
+  }
+}
+
 /** 完整重置：清掉所有年份的規劃與顯示偏好，回到全新狀態 */
 export function clearAllData(): void {
   try {

@@ -116,7 +116,7 @@ export function ShareSheet({ plan, segments, onClose }: Props) {
               checked={includeNotes}
               onChange={(e) => setIncludeNotes(e.target.checked)}
             />
-            包含備註（把行程轉移到電腦／其他裝置時再開）
+            包含備註（轉移到其他裝置或自行備份時再開）
           </label>
           <textarea
             ref={planUrlRef}
@@ -146,7 +146,7 @@ export function ShareSheet({ plan, segments, onClose }: Props) {
           </div>
           <p className="share-hint">
             {includeNotes
-              ? '⚠️ 這個連結包含你的備註內容，建議只傳給自己的裝置'
+              ? '⚠️ 這個連結包含你的備註，只傳給自己：存進記事本就是完整備份，資料被清除也能還原'
               : '朋友打開是唯讀檢視（看得到行程名稱，看不到備註），可一鍵匯入'}
           </p>
         </div>

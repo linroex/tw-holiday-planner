@@ -9,7 +9,7 @@ import {
 } from 'react';
 import type { UserPlan } from '../data/types';
 import { SUPPORTED_YEARS } from '../data';
-import { defaultPlan, loadPlan, savePlan } from '../lib/storage';
+import { defaultPlan, loadPlan, requestPersistentStorage, savePlan } from '../lib/storage';
 import { planReducer, type PlanAction } from './planReducer';
 
 /** 所有支援年份的規劃同時載入，各年份分開儲存（thp.plan.<year>） */
@@ -48,6 +48,10 @@ export function PlanProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     for (const plan of Object.values(plans)) savePlan(plan);
   }, [plans]);
+
+  useEffect(() => {
+    void requestPersistentStorage();
+  }, []);
 
   const dispatchFor = useCallback(
     (year: number, action: PlanAction) => dispatch({ year, action }),
