@@ -2,6 +2,8 @@ import type { HolidayEntry } from '../data/types';
 import type { BreakSegment } from '../lib/breaks';
 import {
   daysInMonth,
+  epochDayToISO,
+  fromEpochDay,
   isoToEpochDay,
   toEpochDay,
   weekdayOf,
@@ -43,7 +45,10 @@ export function MonthGrid({
 }: Props) {
   const firstDay = toEpochDay(year, month, 1);
   const numDays = daysInMonth(year, month);
-  const leadingBlanks = (weekdayOf(firstDay) - weekStart + 7) % 7;
+  // 頭尾補上鄰月日期（淡化），每一列都是完整的一週——跨月連假不再斷裂
+  const leading = (weekdayOf(firstDay) - weekStart + 7) % 7;
+  const totalCells = Math.ceil((leading + numDays) / 7) * 7;
+  const gridStart = firstDay - leading;
 
   return (
     <section
@@ -62,36 +67,28 @@ export function MonthGrid({
         })}
       </div>
       <div className="month-grid">
-        {Array.from({ length: leadingBlanks }, (_, i) => (
-          <div key={`b${i}`} />
-        ))}
-        {Array.from({ length: numDays }, (_, i) => {
-          const epochDay = firstDay + i;
-          const iso = `${year}-${String(month).padStart(2, '0')}-${String(i + 1).padStart(2, '0')}`;
+        {Array.from({ length: totalCells }, (_, idx) => {
+          const epochDay = gridStart + idx;
+          const iso = epochDayToISO(epochDay);
+          const outside = epochDay < firstDay || epochDay >= firstDay + numDays;
           const status = getDayStatus(epochDay, holidayMap, leaveSet);
           const segInfo = segMap.get(iso);
           const entry = holidayMap.get(iso);
-          const wd = weekdayOf(epochDay);
-          // 此格起算，區段在本列還延續幾格（受區段結尾／週界／月界限制）——貼紙置中用
+          // 此格起算，區段在本列還延續幾格（列必為完整一週，只受區段結尾與週界限制）
           const rowSpan = segInfo
-            ? Math.min(
-                isoToEpochDay(segInfo.seg.end) - epochDay,
-                (weekStart + 6 - wd + 7) % 7,
-                numDays - 1 - i,
-              ) + 1
+            ? Math.min(isoToEpochDay(segInfo.seg.end) - epochDay, 6 - (idx % 7)) + 1
             : 1;
           return (
             <DayCell
               key={iso}
               iso={iso}
-              day={i + 1}
-              weekday={wd}
+              day={fromEpochDay(epochDay).d}
+              weekday={weekdayOf(epochDay)}
               rowSpan={rowSpan}
               status={status}
               entry={entry?.muted ? undefined : entry}
               segInfo={segInfo}
-              isMonthStart={i === 0}
-              isMonthEnd={i === numDays - 1}
+              outside={outside}
               isToday={iso === todayISO}
               isPast={iso < todayISO}
               isSelected={segInfo?.seg === selectedSegment}

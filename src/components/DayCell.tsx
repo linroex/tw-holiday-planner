@@ -10,9 +10,8 @@ interface Props {
   status: DayStatus;
   entry: HolidayEntry | undefined;
   segInfo: SegCellInfo | undefined;
-  /** 該月第一天／最後一天：連假跨月時色帶改為漸層延續而非封口 */
-  isMonthStart: boolean;
-  isMonthEnd: boolean;
+  /** 鄰月補位格（淡化顯示，仍可操作） */
+  outside: boolean;
   /** 區段在本列自此格起延續的格數（貼紙在該列置中用） */
   rowSpan: number;
   isToday: boolean;
@@ -36,8 +35,7 @@ export function DayCell({
   status,
   entry,
   segInfo,
-  isMonthStart,
-  isMonthEnd,
+  outside,
   rowSpan,
   isToday,
   isPast,
@@ -46,15 +44,13 @@ export function DayCell({
   onTap,
 }: Props) {
   const classes = ['day', `day-${status}`];
+  if (outside) classes.push('day-outside');
   if (isPast) classes.push('day-past');
   if (segInfo) {
     classes.push('seg');
-    // 週界斷行時色帶各自封口
+    // 週界斷行時色帶各自封口（列必為完整一週，不再有跨月中斷）
     if (segInfo.isStart || weekday === weekStart) classes.push('seg-start');
     if (segInfo.isEnd || weekday === (weekStart + 6) % 7) classes.push('seg-end');
-    // 跨月延續：月界處不封口，改為漸層淡出／淡入
-    if (isMonthEnd && !segInfo.isEnd) classes.push('seg-cont-right');
-    if (isMonthStart && !segInfo.isStart) classes.push('seg-cont-left');
   }
   if (isToday) classes.push('day-today');
   if (isSelected) classes.push('seg-selected');
@@ -62,10 +58,8 @@ export function DayCell({
   // 區段已命名 → 貼紙標籤代表整段，段內各日的假名／請假字樣一律隱藏以免雜亂
   const label = segInfo?.name ? null : cellLabel(status, entry);
 
-  // 貼紙在區段起點＋每週列的第一格＋跨月的第一格出現，
-  // 並在該列的區段範圍內置中（長區段每一列都看得到名稱）
-  const showName =
-    !!segInfo?.name && (segInfo.isStart || weekday === weekStart || isMonthStart);
+  // 貼紙在區段起點與每週列的第一格出現，並在該列的區段範圍內置中
+  const showName = !!segInfo?.name && (segInfo.isStart || weekday === weekStart);
   // 掛事件條的格子整格提升層級，避免被同列較後的（有 transform 的）請假格蓋住
   if (showName) classes.push('day-hosts-name');
 
