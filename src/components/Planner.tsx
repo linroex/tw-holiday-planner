@@ -10,6 +10,7 @@ import {
 } from '../lib/storage';
 import { getHolidayMap, SUPPORTED_YEARS } from '../data';
 import { ownerYearOf, usePlans } from '../state/PlanContext';
+import { AppFooter } from './AppFooter';
 import { BreakDetailSheet } from './BreakDetailSheet';
 import { HelpSheet } from './HelpSheet';
 import { Tour, type TourStep } from './Tour';
@@ -266,6 +267,7 @@ export function Planner() {
             預算），公告後的假日會自動接上。
           </p>
         </div>
+        <AppFooter />
       </main>
 
       {listOpen && (

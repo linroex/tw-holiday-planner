@@ -620,6 +620,32 @@ textarea {
   margin-bottom: 16px;
 }
 
+/* ── 頁尾（隱私＋關於＋社群） ── */
+.app-footer {
+  margin: 4px 12px 8px;
+  padding: 16px;
+  border-top: 1px solid var(--c-border);
+}
+
+.footer-privacy,
+.footer-about {
+  font-size: 12px;
+  color: var(--c-muted);
+  margin-bottom: 10px;
+}
+
+.footer-links {
+  display: flex;
+  gap: 8px;
+}
+
+.footer-link {
+  flex: 1;
+  font-size: 14px;
+  min-height: 42px;
+  line-height: 42px;
+}
+
 /* ── 2028 預告卡片（月曆底部） ── */
 .future-note {
   margin: 8px 12px 24px;
