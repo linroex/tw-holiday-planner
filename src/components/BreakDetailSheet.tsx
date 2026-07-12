@@ -37,8 +37,8 @@ export function BreakDetailSheet({ year, segment, annotations, onSave, onClose }
             <h3 className="sheet-title">{name.trim() || segment.defaultName}</h3>
             <p className="sheet-subtitle">
               {formatRange(segment)} · {segment.totalDays} 天
-              {inYearLeave > 0 && ` · 請 ${inYearLeave} 天特休`}
-              {outYearLeave > 0 && ` · 跨年 ${outYearLeave} 天（不扣特休）`}
+              {inYearLeave > 0 && ` · 請 ${inYearLeave} 天假`}
+              {outYearLeave > 0 && ` · 跨年 ${outYearLeave} 天（不佔預算）`}
             </p>
           </div>
           <button type="button" className="btn-text" onClick={onClose}>

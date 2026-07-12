@@ -41,7 +41,7 @@ export function buildICS(plan: UserPlan, segments: BreakSegment[]): string {
     const title = named?.name.trim() ?? seg.defaultName;
     const desc = [
       ...anns.map((a) => a.note.trim()).filter(Boolean),
-      seg.leaveDays.length ? `請特休：${seg.leaveDays.map(formatShort).join('、')}` : '',
+      seg.leaveDays.length ? `請假：${seg.leaveDays.map(formatShort).join('、')}` : '',
     ]
       .filter(Boolean)
       .join('\n');

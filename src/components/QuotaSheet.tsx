@@ -6,7 +6,7 @@ interface Props {
   onClose: () => void;
 }
 
-/** 從左下角特休區塊點開的快速調整面板：只做一件事——調當前年份的特休天數 */
+/** 從左下角請假區塊點開的快速調整面板：只做一件事——調當前年份的請假預算 */
 export function QuotaSheet({ year, quota, used, onSetQuota, onClose }: Props) {
   return (
     <div className="sheet-backdrop" onClick={onClose}>
@@ -14,8 +14,10 @@ export function QuotaSheet({ year, quota, used, onSetQuota, onClose }: Props) {
         <div className="sheet-handle" />
         <div className="sheet-header">
           <div>
-            <h3 className="sheet-title">{year} 年度特休天數</h3>
-            <p className="sheet-subtitle">已規劃 {used} 天</p>
+            <h3 className="sheet-title">{year} 年請假預算</h3>
+            <p className="sheet-subtitle">
+              已規劃 {used} 天 · 特休、補休、婚假都算，只是規劃參考，不是硬上限
+            </p>
           </div>
           <button type="button" className="btn-text" onClick={onClose}>
             完成

@@ -1,6 +1,6 @@
 interface Props {
   years: number[];
-  /** 各年份的特休天數（每年可不同） */
+  /** 各年份的請假預算（每年可不同） */
   quotas: Record<number, number>;
   firstRun: boolean;
   weekStart: 0 | 1;
@@ -40,17 +40,17 @@ export function SettingsSheet({
         </div>
         {firstRun && (
           <p className="settings-intro">
-            設定各年度的特休天數（年資不同天數可能不同），之後點月曆上的上班日就能標記請假、湊出連假。
+            先抓一下各年度「打算請幾天假」的預算（特休、補休、婚假都算，只是規劃參考），之後點月曆上的上班日就能標記請假、湊出連假。
           </p>
         )}
         {years.map((year) => (
           <div className="field" key={year}>
-            <span className="field-label">{year} 年度特休天數</span>
+            <span className="field-label">{year} 年請假預算（天）</span>
             <div className="stepper">
               <button
                 type="button"
                 className="stepper-btn"
-                aria-label={`減少 ${year} 特休`}
+                aria-label={`減少 ${year} 請假預算`}
                 onClick={() => onSetQuota(year, quotas[year]! - 1)}
                 disabled={quotas[year]! <= 0}
               >
@@ -60,7 +60,7 @@ export function SettingsSheet({
               <button
                 type="button"
                 className="stepper-btn"
-                aria-label={`增加 ${year} 特休`}
+                aria-label={`增加 ${year} 請假預算`}
                 onClick={() => onSetQuota(year, quotas[year]! + 1)}
               >
                 ＋

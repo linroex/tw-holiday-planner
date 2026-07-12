@@ -33,7 +33,7 @@ export interface BreakAnnotation {
 export interface UserPlan {
   version: 1;
   year: number;
-  /** 年度特休天數 */
+  /** 年度請假預算（特休、補休等都算，規劃參考用） */
   annualLeaveQuota: number;
   /** 請假日，排序後儲存 */
   leaveDays: ISODate[];

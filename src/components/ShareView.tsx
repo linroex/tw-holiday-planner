@@ -35,7 +35,7 @@ export function ShareView({ plan }: { plan: UserPlan }) {
       </header>
       <main className="calendar-scroll">
         <p className="usage-hint">
-          這是朋友分享的規劃（特休 {plan.leaveDays.length} / {plan.annualLeaveQuota} 天）
+          這是朋友分享的規劃（請假 {plan.leaveDays.length} / {plan.annualLeaveQuota} 天）
         </p>
         <YearCalendar
           years={[plan.year]}
@@ -58,7 +58,7 @@ export function ShareView({ plan }: { plan: UserPlan }) {
       <div className="quota-bar">
         <div className="quota-info">
           <span className="quota-line">
-            特休 <b>{plan.leaveDays.length}</b> / {plan.annualLeaveQuota}
+            請假 <b>{plan.leaveDays.length}</b> / {plan.annualLeaveQuota}
           </span>
           <span className="quota-sub">朋友的規劃</span>
         </div>

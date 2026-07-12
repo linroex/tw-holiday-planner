@@ -26,11 +26,11 @@ export function QuotaBar({
       <button
         type="button"
         className={`quota-info${over ? ' quota-over' : ''}`}
-        aria-label="調整特休天數"
+        aria-label="調整請假預算"
         onClick={onQuotaTap}
       >
         <span className="quota-line">
-          特休 <b>{used}</b> / {quota} <span className="quota-edit">✎</span>
+          請假 <b>{used}</b> / {quota} <span className="quota-edit">✎</span>
         </span>
         <span className="quota-sub">
           {year} · {over ? `超額 ${-remaining} 天` : `剩 ${remaining} 天`}

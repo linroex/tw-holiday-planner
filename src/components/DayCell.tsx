@@ -21,7 +21,7 @@ interface Props {
 }
 
 function cellLabel(status: DayStatus, entry: HolidayEntry | undefined): string | null {
-  if (status === 'leave') return '特休';
+  if (status === 'leave') return '請假';
   if (status === 'makeup-workday') return '補班';
   if (!entry) return null;
   return entry.kind === 'makeup-holiday' ? '補假' : entry.name;

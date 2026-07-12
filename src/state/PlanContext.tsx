@@ -16,7 +16,7 @@ import { planReducer, type PlanAction } from './planReducer';
 interface PlansContextValue {
   plans: Record<number, UserPlan>;
   dispatchFor: (year: number, action: PlanAction) => void;
-  /** 本裝置第一次使用（任何年份都沒有資料）→ 引導設定特休 */
+  /** 本裝置第一次使用（任何年份都沒有資料）→ 引導設定請假預算 */
   firstRun: boolean;
 }
 

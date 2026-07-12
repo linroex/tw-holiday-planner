@@ -2,7 +2,7 @@ import type { UserPlan } from '../data/types';
 
 const planKey = (year: number) => `thp.plan.${year}`;
 
-export const DEFAULT_QUOTA = 7; // 勞基法年資滿三年的特休天數，首次開啟時引導使用者調整
+export const DEFAULT_QUOTA = 7; // 預設請假預算（參考勞基法滿三年特休），首次開啟時引導使用者調整
 
 export function defaultPlan(year: number): UserPlan {
   return { version: 1, year, annualLeaveQuota: DEFAULT_QUOTA, leaveDays: [], annotations: [] };

@@ -4,10 +4,10 @@ interface Props {
 }
 
 const STEPS: [string, string][] = [
-  ['設定特休天數', '點左下角的「特休 x / y」，設定你今年有幾天特休（每個年份可以不同）。'],
+  ['設定請假預算', '點左下角的「請假 x / y」，抓一下今年打算請幾天假——特休、補休、婚假都算，只是規劃參考（每個年份可以不同）。'],
   [
     '點上班日標記請假',
-    '想請假的日子點一下變成琥珀色「特休」，再點一次取消。週末、國定假日、請假日連在一起就自動變成一段連假，用黃色色帶標出總長度。',
+    '想請假的日子點一下變成琥珀色「請假」，再點一次取消。週末、國定假日、請假日連在一起就自動變成一段連假，用黃色色帶標出總長度。',
   ],
   [
     '幫連假取名、寫備註',
@@ -15,7 +15,7 @@ const STEPS: [string, string][] = [
   ],
   [
     '總覽與跳轉',
-    '右下角「連假 N」看全年清單；左上角年份下拉可快速跳到 2026／2027。隔年 1 月的請假不會扣今年特休。',
+    '右下角「連假 N」看全年清單；左上角年份下拉可快速跳到 2026／2027。隔年 1 月的請假不佔今年預算。',
   ],
   [
     '分享與匯出',
@@ -26,7 +26,7 @@ const STEPS: [string, string][] = [
 const LEGEND: { className: string; label: string; desc: string }[] = [
   { className: 'legend-holiday', label: '1', desc: '國定假日／補假' },
   { className: 'legend-weekend', label: '2', desc: '週末' },
-  { className: 'legend-leave', label: '3', desc: '你的特休' },
+  { className: 'legend-leave', label: '3', desc: '你的請假日' },
   { className: 'legend-streak', label: '4', desc: '連假色帶（相連的休假）' },
 ];
 
