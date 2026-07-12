@@ -8,7 +8,7 @@ import {
   saveSettings,
   type DisplaySettings,
 } from '../lib/storage';
-import { isIOS, isStandalone } from '../lib/platform';
+import { isSafariITP, isStandalone } from '../lib/platform';
 import { getHolidayMap, SUPPORTED_YEARS } from '../data';
 import { ownerYearOf, usePlans } from '../state/PlanContext';
 import { AppFooter } from './AppFooter';
@@ -211,9 +211,9 @@ export function Planner() {
     d.startsWith(`${activeYear}-`),
   ).length;
 
-  // iOS Safari（未加入主畫面）＋已有相當規劃內容 → 提醒備份（7 天儲存清除規則）
+  // Safari 系（iOS 全瀏覽器＋macOS Safari）＋已有相當規劃內容 → 提醒備份（7 天清除規則）
   const showBackupHint =
-    isIOS() &&
+    isSafariITP() &&
     !isStandalone() &&
     !settings.backupHintDismissed &&
     (leaveDays.length >= 5 || annotations.length >= 1);
