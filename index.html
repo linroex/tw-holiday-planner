@@ -21,6 +21,25 @@
     <link rel="stylesheet" crossorigin href="./assets/index-BVfagOCp.css">
   <link rel="manifest" href="./manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="./registerSW.js"></script></head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- 首次載入的極簡 splash：JS 下載期間不留白屏，React 掛載後自動取代 -->
+      <div
+        style="
+          min-height: 100dvh;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          background: #faf5e9;
+          color: #988b79;
+          font-family: system-ui, sans-serif;
+          font-size: 15px;
+        "
+      >
+        <div style="font-size: 44px">🗓️</div>
+        <div>連假規劃載入中…</div>
+      </div>
+    </div>
   </body>
 </html>
