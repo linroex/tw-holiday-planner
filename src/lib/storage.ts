@@ -43,6 +43,8 @@ export interface DisplaySettings {
   weekStart: 0 | 1;
   /** 上次規劃的年份，下次開啟時回到同一年 */
   lastYear?: number;
+  /** iOS Safari 備份提示卡已被關閉 */
+  backupHintDismissed?: boolean;
 }
 
 const SETTINGS_KEY = 'thp.settings';
@@ -53,10 +55,15 @@ export function loadSettings(): DisplaySettings {
     if (raw) {
       const s: unknown = JSON.parse(raw);
       if (typeof s === 'object' && s !== null) {
-        const { weekStart, lastYear } = s as { weekStart?: unknown; lastYear?: unknown };
+        const { weekStart, lastYear, backupHintDismissed } = s as {
+          weekStart?: unknown;
+          lastYear?: unknown;
+          backupHintDismissed?: unknown;
+        };
         return {
           weekStart: weekStart === 0 || weekStart === 1 ? weekStart : 1,
           ...(typeof lastYear === 'number' ? { lastYear } : {}),
+          ...(backupHintDismissed === true ? { backupHintDismissed: true } : {}),
         };
       }
     }

@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import type { UserPlan } from '../data/types';
+import { copyText } from '../lib/clipboard';
 import { SocialLinks } from './AppFooter';
 import type { BreakSegment } from '../lib/breaks';
 import { buildICS } from '../lib/calendar';
@@ -9,24 +10,6 @@ interface Props {
   plan: UserPlan;
   segments: BreakSegment[];
   onClose: () => void;
-}
-
-/** 非安全來源（HTTP）也能用的複製 */
-async function copyText(text: string): Promise<void> {
-  if (window.isSecureContext && navigator.clipboard) {
-    await navigator.clipboard.writeText(text);
-    return;
-  }
-  const ta = document.createElement('textarea');
-  ta.value = text;
-  ta.style.position = 'fixed';
-  ta.style.opacity = '0';
-  document.body.appendChild(ta);
-  ta.focus();
-  ta.select();
-  const ok = document.execCommand('copy');
-  ta.remove();
-  if (!ok) throw new Error('copy-failed');
 }
 
 /**
