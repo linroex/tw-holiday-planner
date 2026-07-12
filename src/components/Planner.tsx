@@ -11,6 +11,7 @@ import {
 import { getHolidayMap, SUPPORTED_YEARS } from '../data';
 import { ownerYearOf, usePlans } from '../state/PlanContext';
 import { BreakDetailSheet } from './BreakDetailSheet';
+import { HelpSheet } from './HelpSheet';
 import { BreakList } from './BreakList';
 import { QuotaBar } from './QuotaBar';
 import { QuotaSheet } from './QuotaSheet';
@@ -28,6 +29,7 @@ export function Planner() {
   const [onboarded, setOnboarded] = useState(!firstRun);
   const [shareOpen, setShareOpen] = useState(false);
   const [quotaOpen, setQuotaOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
   const [settings, setSettings] = useState<DisplaySettings>(loadSettings);
   const [activeYear, setActiveYear] = useState(() => {
     const last = loadSettings().lastYear;
@@ -177,14 +179,24 @@ export function Planner() {
           </select>
           <h1 className="header-title">連假規劃</h1>
         </div>
-        <button
-          type="button"
-          className="btn-icon"
-          aria-label="設定"
-          onClick={() => setSettingsOpen(true)}
-        >
-          ⚙
-        </button>
+        <div className="header-actions">
+          <button
+            type="button"
+            className="btn-icon btn-help"
+            aria-label="使用說明"
+            onClick={() => setHelpOpen(true)}
+          >
+            ?
+          </button>
+          <button
+            type="button"
+            className="btn-icon"
+            aria-label="設定"
+            onClick={() => setSettingsOpen(true)}
+          >
+            ⚙
+          </button>
+        </div>
       </header>
 
       <main className="calendar-scroll" ref={scrollRef}>
@@ -277,6 +289,8 @@ export function Planner() {
           }}
         />
       )}
+
+      {helpOpen && <HelpSheet onClose={() => setHelpOpen(false)} />}
 
       {toast && <div className="toast">{toast}</div>}
     </div>
