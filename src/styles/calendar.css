@@ -165,6 +165,11 @@
   border-bottom-right-radius: 5px 3px;
 }
 
+/* 整份月曆終點後的補位格：留白（保持列的格線對齊） */
+.day-void {
+  visibility: hidden;
+}
+
 /* 月份在列中間交接：1 號左側一條虛線分隔（鄰月補位格不再淡化） */
 .day-month-edge::before {
   content: '';

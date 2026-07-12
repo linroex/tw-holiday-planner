@@ -74,6 +74,7 @@ export function YearCalendar({
           title={titleOf(y, m, boundary, i === 0)}
           boundary={boundary}
           dropLeadingWeek={i > 0}
+          voidAfter={isoToEpochDay(`${lastYear + 1}-01-31` as ISODate)}
           holidayMap={holidayMap}
           leaveSet={leaveSet}
           segMap={segMap}

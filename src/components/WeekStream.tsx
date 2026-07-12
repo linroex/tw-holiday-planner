@@ -98,9 +98,10 @@ export function WeekStream({
         })}
       </div>
       {weeks.map((weekStartDay) => {
-        // 這一週若含某月 1 號，於週列前插入月份標題（也是跳轉錨點）
+        // 這一週若含某月 1 號，於週列前插入月份標題（也是跳轉錨點）；
+        // 超出範圍的 1 號不算（結尾週的次月補位是留白，不該出現次月標題）
         const firstOfMonth = Array.from({ length: 7 }, (_, i) => weekStartDay + i).find(
-          (d) => fromEpochDay(d).d === 1,
+          (d) => fromEpochDay(d).d === 1 && d <= rangeEnd,
         );
         const heading =
           firstOfMonth !== undefined ? fromEpochDay(firstOfMonth) : null;
@@ -117,6 +118,10 @@ export function WeekStream({
             <div className="month-grid stream-week">
               {Array.from({ length: 7 }, (_, i) => {
                 const epochDay = weekStartDay + i;
+                // 整條週流結束後的補位：留白（後面沒有月份接手，不顯示日期）
+                if (epochDay > rangeEnd) {
+                  return <div key={epochDay} className="day day-void" aria-hidden="true" />;
+                }
                 const iso = epochDayToISO(epochDay);
                 // 月份交界週：標題是新月份，屬於上個月的尾巴淡化顯示
                 const outside = firstOfMonth !== undefined && epochDay < firstOfMonth;

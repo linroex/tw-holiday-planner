@@ -32,6 +32,8 @@ interface Props {
    * 每一週只由它開始的月份顯示，整份月曆每天恰出現一次
    */
   dropLeadingWeek?: boolean;
+  /** 超過此 epoch day 的補位格留白（整份月曆的終點，後面沒有月份接手） */
+  voidAfter?: number;
   onDayTap: DayTapHandler;
 }
 
@@ -47,6 +49,7 @@ export function MonthGrid({
   selectedSegment,
   weekStart,
   dropLeadingWeek,
+  voidAfter,
   onDayTap,
 }: Props) {
   const firstDay = toEpochDay(year, month, 1);
@@ -76,6 +79,9 @@ export function MonthGrid({
       <div className="month-grid">
         {Array.from({ length: totalCells }, (_, idx) => {
           const epochDay = gridStart + idx;
+          if (voidAfter !== undefined && epochDay > voidAfter) {
+            return <div key={epochDay} className="day day-void" aria-hidden="true" />;
+          }
           const iso = epochDayToISO(epochDay);
           const outside = epochDay < firstDay || epochDay >= firstDay + numDays;
           const status = getDayStatus(epochDay, holidayMap, leaveSet);
