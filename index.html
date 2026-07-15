@@ -8,7 +8,10 @@
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
 
-      gtag('config', 'G-P1NWE1CBNS');
+      // 去掉 hash 再回報：分享/備份連結的規劃資料都在 #hash 裡，不該送去 GA
+      gtag('config', 'G-P1NWE1CBNS', {
+        page_location: location.origin + location.pathname + location.search,
+      });
     </script>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
